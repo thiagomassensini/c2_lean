@@ -56,6 +56,17 @@ theorem nearRegion_mem_highOffCriticalStrip {deltaStar : ℝ -> ℝ} {T0 : ℝ} 
     (hs : nearRegion deltaStar T0 s) : highOffCriticalStrip T0 s :=
   hs.1
 
+theorem nearRegion_mono {deltaStar₀ deltaStar₁ : ℝ -> ℝ} {T0 : ℝ} {s : Complex}
+    (hDelta : ∀ t : ℝ, deltaStar₀ t ≤ deltaStar₁ t)
+    (hs : nearRegion deltaStar₀ T0 s) :
+    nearRegion deltaStar₁ T0 s := by
+  refine ⟨hs.1, ?_⟩
+  have hScale :
+      (11 : ℝ) / 10 * deltaStar₀ (stripHeight s) ≤
+        (11 : ℝ) / 10 * deltaStar₁ (stripHeight s) := by
+    exact mul_le_mul_of_nonneg_left (hDelta (stripHeight s)) (by norm_num : 0 ≤ (11 : ℝ) / 10)
+  exact le_trans hs.2 hScale
+
 theorem bulkRegion_mem_highOffCriticalStrip {deltaStar : ℝ -> ℝ} {eps T0 : ℝ} {s : Complex}
     (hs : bulkRegion deltaStar eps T0 s) : highOffCriticalStrip T0 s :=
   hs.1
