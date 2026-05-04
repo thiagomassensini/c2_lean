@@ -9,6 +9,19 @@ def nearRegionEventuallyNonvanishing
     (FX : Nat -> Complex -> Complex) (deltaStar : ℝ -> ℝ) (T0 : ℝ) : Prop :=
   ∃ X0 : Nat, ∀ X : Nat, X0 ≤ X -> ∀ s : Complex, nearRegion deltaStar T0 s -> FX X s ≠ 0
 
+theorem nearRegionEventuallyNonvanishing_of_taylorWitness
+    {FX : Nat -> Complex -> Complex} {deltaStar : ℝ -> ℝ} {T0 : ℝ}
+    (hTaylor :
+      ∃ X0 : Nat,
+        ∀ X : Nat, X0 ≤ X -> ∀ s : Complex,
+          nearRegion deltaStar T0 s ->
+            taylorNonvanishingWitness (FX X s) |criticalOffset s|) :
+    nearRegionEventuallyNonvanishing FX deltaStar T0 := by
+  rcases hTaylor with ⟨X0, hX0⟩
+  refine ⟨X0, ?_⟩
+  intro X hX s hs
+  exact nonzero_of_taylorNonvanishingWitness (hX0 X hX s hs)
+
 theorem nearRegionEventuallyNonvanishing_of_le
     {FX : Nat -> Complex -> Complex} {deltaStar₀ deltaStar₁ : ℝ -> ℝ} {T0 : ℝ}
     (hDelta : ∀ t : ℝ, deltaStar₀ t ≤ deltaStar₁ t)
@@ -25,6 +38,18 @@ theorem nearRegionEventuallyNonvanishing_of_ge_deltaStarLowerModel
     (hNear : nearRegionEventuallyNonvanishing FX deltaStar defaultT0) :
     nearRegionEventuallyNonvanishing FX deltaStarLowerModel defaultT0 := by
   exact nearRegionEventuallyNonvanishing_of_le hDelta hNear
+
+theorem nearRegionEventuallyNonvanishing_of_taylorWitness_of_ge_deltaStarLowerModel
+    {FX : Nat -> Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hDelta : ∀ t : ℝ, deltaStarLowerModel t ≤ deltaStar t)
+    (hTaylor :
+      ∃ X0 : Nat,
+        ∀ X : Nat, X0 ≤ X -> ∀ s : Complex,
+          nearRegion deltaStar defaultT0 s ->
+            taylorNonvanishingWitness (FX X s) |criticalOffset s|) :
+    nearRegionEventuallyNonvanishing FX deltaStarLowerModel defaultT0 := by
+  apply nearRegionEventuallyNonvanishing_of_ge_deltaStarLowerModel hDelta
+  exact nearRegionEventuallyNonvanishing_of_taylorWitness hTaylor
 
 /-!
 Scaffold for the near-axis zero-free region of `F_X`.

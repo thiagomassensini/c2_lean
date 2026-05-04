@@ -44,6 +44,27 @@ theorem routeK_elo5_nonzero_from_taylor (m M₂ R : ℝ) (hm : 0 < m) (hM₂ : 0
     linarith)
 
 /--
+A pointwise witness that the Taylor lower bound already forces nonvanishing at offset `δ`.
+-/
+def taylorNonvanishingWitness (F : Complex) (δ : ℝ) : Prop :=
+  ∃ m M₂ R : ℝ,
+    0 < m ∧
+    0 < M₂ ∧
+    0 < δ ∧
+    δ < taylorExclusionRadius m M₂ ∧
+    0 ≤ R ∧
+    R < δ * m - δ ^ 2 / 2 * M₂ ∧
+    δ * m - δ ^ 2 / 2 * M₂ - R ≤ ‖F‖
+
+/-- Any Taylor nonvanishing witness yields actual nonvanishing of the target value. -/
+theorem nonzero_of_taylorNonvanishingWitness {F : Complex} {δ : ℝ}
+    (hWitness : taylorNonvanishingWitness F δ) :
+    F ≠ 0 := by
+  rcases hWitness with ⟨m, M₂, R, hm, hM₂, hδ, hδ_small, hR, hR_small, hF_lb⟩
+  exact routeK_elo5_nonzero_from_taylor
+    m M₂ R hm hM₂ δ hδ hδ_small hR hR_small F hF_lb
+
+/--
 If `M₂ ≤ M₂bound`, then the Taylor exclusion radius is bounded below by the corresponding
 bound-side radius.
 -/

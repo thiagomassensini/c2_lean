@@ -1,24 +1,15 @@
-# Arquitetura Lean — Formalização da Cadeia C2 → RH
+# Arquitetura Lean — Estado Atual da Cadeia C2 → RH
 
-> **Documento de referência para implementação Lean 4 + Mathlib.**
+> **Documento vivo de arquitetura e status do projeto Lean 4 + Mathlib.**
 >
-> Mapa de o que formalizar, em que ordem, em quais arquivos, citando cada
-> nota de prova-papel correspondente. Estratégia: **só formalizar o que é
-> necessário** para a cadeia lógica fechar, **citar** input clássico
-> (V-K Ford, Phragmén-Lindelöf, equação funcional) como `axiom` ou
-> `Mathlib`.
+> Este arquivo nao descreve mais apenas um plano futuro. Ele registra o
+> estado real do repositorio `Lean/`, o que ja esta build-clean, quais
+> camadas estao fechadas em Lean, e quais pontos ainda entram como
+> interface ou input classico.
 >
-> Lean 4 + Mathlib4 atual (toolchain `leanprover/lean4:v4.x`).
+> Atualizado em **2026-05-04**.
 >
-> **Princípio.** A teoria C2 original entra como definições e teoremas
-> formalizados. O input clássico entra como hipótese declarada (axiom
-> citando referência) ou via Mathlib quando disponível.
-
-> **Nota de implementacao (2026-05-04).** O scaffold inicial ja foi criado
-> neste repositorio em `Lean/`, seguindo o layout oficial do Lake atual:
-> `lakefile.toml`, `lean-toolchain`, `LeanC2.lean` e a arvore `LeanC2/`.
-> O codigo antigo foi preservado em `Lean/Antigo_Lean_C2/` e o mapa de
-> migracao esta em `Lean/legacy_reuse_map.md`.
+> Toolchain atual: Lean `v4.29.1`, Mathlib `v4.29.1`.
 
 ---
 
@@ -27,13 +18,15 @@
 - [1. Princípios de design](#1-princípios-de-design)
 - [2. Estrutura de diretórios](#2-estrutura-de-diretórios)
 - [3. Módulos e dependências](#3-módulos-e-dependências)
-- [4. O que formalizar (camada por camada)](#4-o-que-formalizar)
-- [5. O que NÃO formalizar (axiomas declarados)](#5-o-que-não-formalizar)
+- [4. Estado por camada](#4-estado-por-camada)
+- [5. O que ainda entra como input externo](#5-o-que-ainda-entra-como-input-externo)
 - [6. Mapeamento doc → arquivo Lean](#6-mapeamento-doc--arquivo-lean)
-- [7. Roadmap de implementação](#7-roadmap-de-implementação)
-- [8. Convenções de naming e estilo](#8-convenções)
-- [9. CI, build, e dependências externas](#9-ci-build-dependências)
-- [10. Sketch de skeleton inicial](#10-sketch-de-skeleton-inicial)
+- [7. Endpoints e APIs já expostos](#7-endpoints-e-apis-já-expostos)
+- [8. Build, toolchain e CI](#8-build-toolchain-e-ci)
+- [9. Convenções de manutenção](#9-convenções-de-manutenção)
+- [10. Próximos passos realistas](#10-próximos-passos-realistas)
+- [11. Referências externas](#11-referências-externas)
+- [12. Status resumido](#12-status-resumido)
 
 ---
 
@@ -88,524 +81,266 @@ Lean/
 │   └── Cancellation.lean      -- Thm 4: |D_X - B_X| / |D_X| = O(1/X)
 │
   ├── NearAxis/
-│   ├── Transversality.lean    -- Thm 8: ∂^{m_ρ}(D-B)|_ρ = c_0(ρ) ζ^{(m_ρ)}(ρ) ≠ 0
-│   ├── Amplification.lean     -- Thm 6: A(ρ, X) = O(X) → ∞
-│   ├── TaylorRadius.lean      -- δ*(ρ) = 2 M_1 / M_2
-│   ├── GlobalBound.lean       -- Thm 11: δ* ≥ 2/(2A + C log²γ), A=1.5862, C=0.169
-│   └── FXNonZero.lean         -- Lema N: |F_X| > 0 em Ω_near^+
-│
-  ├── Bulk/
-│   ├── Resolvent.lean         -- T_r(θ) = 1/(1 - re^{iθ}), inf = 1/(1+r)
-│   ├── QuartetSharp.lean      -- inf|P_r| = (1-r)(1+r²)
-│   ├── ClassicalAxioms.lean   -- AXIOMS: V-K Ford 2002, eq. funcional, Phragmén-Lindelöf
-│   ├── BulkLowerBound.lean    -- Teorema 6.6: |F_∞| ≥ c_min · exp(-C*(log T)^{2/3+η})
-│   └── FXNonZeroBulk.lean     -- Lema B: |F_X| > 0 em Ω_bulk^+
-│
-  ├── Edge/
-│   ├── EdgeRight.lean         -- Lema R: borda direita via V-K
-│   ├── EdgeLeft.lean          -- Lema L: borda esquerda via eq. funcional
-│   └── FEdgeNonZero.lean      -- Lema F-edge: |F_X| > 0 em Ω_edge^+
-│
-  ├── Glue/
-│   ├── Decomposition.lean     -- Lema 2.1: Ω ⊆ Ω_near^+ ∪ Ω_bulk^+ ∪ Ω_edge^+
-│   ├── Compatibility.lean     -- Lemas 4.1, 4.2: overlaps consistentes
-│   ├── UniformCutoff.lean     -- Lema 4.3: X(T) = X_bulk(T) suficiente
-│   └── GlueTheorem.lean       -- Teorema da Colagem: F_X ≠ 0 em Ω
-│
-  ├── Finite/
-│   ├── DyadicCoverage.lean    -- t ∈ [0, 448] zero-free (cobertura finita)
-│   └── FiniteCertificate.lean -- import do certificado numérico (axiom ou tabela)
-│
-  ├── Transfer/
-│   ├── Hurwitz.lean           -- F_X → F_∞ uniforme + F_X ≠ 0 ⇒ F_∞ ≠ 0
-│   ├── ZetaTransfer.lean      -- Teorema Transfer: ζ ≠ 0 em Ω
-│   └── RH.lean                -- Teorema RH em forma C2 (zeros não-triviais em σ=1/2)
-│
-  └── Numerical/
-    ├── Constants.lean         -- A = 1.5862, C = 0.169, K_1, K_2, C_T, etc.
-    └── Verification.lean      -- runs numéricos como axioms (com hash do log)
+## 2. Estrutura de diretórios
+
+Estrutura real hoje:
+
 ```
+/home/thlinux/C2_Hipotese_De_Riemann/
+├── docs/
+│   ├── c2_lean_architecture.md
+│   └── c2_resumo_formalizacao_lean.md
+└── Lean/
+    ├── .git/
+    ├── .lake/
+    ├── Antigo_Lean_C2/
+    ├── LeanC2/
+    │   ├── Foundations/
+    │   ├── Operators/
+    │   ├── Identity/
+    │   ├── Cutoff/
+    │   ├── NearAxis/
+    │   ├── Bulk/
+    │   ├── Edge/
+    │   ├── Glue/
+    │   ├── Finite/
+    │   ├── Transfer/
+    │   └── Numerical/
+    ├── LeanC2.lean
+    ├── README.md
+    ├── c2_lean_architecture.md
+    ├── legacy_reuse_map.md
+    ├── lake-manifest.json
+    ├── lakefile.toml
+    └── lean-toolchain
+```
+
+Notas importantes:
+
+- o repositorio Lean real e o diretorio `Lean/`, nao a raiz do workspace;
+- o arquivo raiz `Lean/LeanC2.lean` ja reexporta toda a arvore atual;
+- o legado foi preservado em `Lean/Antigo_Lean_C2/`;
+- este documento tem uma copia sincronizada em `Lean/c2_lean_architecture.md`.
 
 ---
 
 ## 3. Módulos e dependências
 
-Grafo de dependências (top-down):
+Fluxo logico atual, em alto nivel:
 
 ```
-                          RH.lean
-                             |
-                       ZetaTransfer.lean
-                             |
-                       Hurwitz.lean
-                             |
-                  ┌──────────┴──────────┐
-                  |                      |
-            GlueTheorem.lean      FiniteCertificate.lean
-                  |
-        ┌─────────┼─────────┐
-        |         |         |
-   FXNonZero  FXNonZeroBulk FEdgeNonZero
-   (NearAxis) (Bulk)        (Edge)
-        |         |         |
-        |    BulkLowerBound  EdgeRight, EdgeLeft
-        |    + ClassicalAxioms     |
-        |                          |
-        ├─── Transversality ────── C0NonZero ───┐
-        |    + GlobalBound                        |
-        |                                          |
-        ├── MeromorphicExt ─────────────────────────┤
-        |    + FundamentalIdentity                  |
-        |                                          |
-        ├── DecayRate (Cutoff)                     |
-        |                                          |
-        └── Genuine, Branch, BranchToGenuine ──────┤
-                            |                      |
-                       BranchNormBarrier            |
-                            |                      |
-              ┌─────────────┴──────────────┐       |
-              |                            |       |
-        DiscreteLaplacian, Tilt    DyadicArith    C0
-              |                            |       |
-              └──────── Basic ─────────────┘───────┘
+Foundations / Operators / Identity
+        |
+        +--> NearAxis
+        +--> Bulk
+        +--> Edge
+        +--> Glue.Decomposition
+
+NearAxis + Bulk + Edge
+        |
+        +--> Glue.UniformCutoff
+        +--> Glue.GlueTheorem
+
+Glue.GlueTheorem + Finite.FiniteCertificate
+        |
+        +--> Transfer.Hurwitz
+        +--> Transfer.ZetaTransfer
+        +--> Transfer.RH
 ```
+
+Rota canonica default ja exposta hoje:
+
+```
+deltaStarLowerModel
+   -> DefaultGlobalBoundData
+   -> cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundData
+   -> hurwitzTransferOffCriticalStrip
+   -> riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
+   -> riemannHypothesisC2_of_defaultGlobalBoundData
+   -> routeK_default_globalBound_chain_RH
+```
+
+Em outras palavras: a cadeia default `finite + high glue + canonical global
+bound` ja chega a um endpoint formal de RH em forma C2, ainda que a passagem
+de Hurwitz e alguns insumos bulk/edge permaneçam como interface classica.
 
 ---
 
-## 4. O que formalizar
+## 4. Estado por camada
 
-### Camada 0 — Foundations (~500 linhas)
+Legenda:
 
-**Objetivo:** definições básicas, álgebra binária, bracket, tilt sign.
+- **Fechado**: definicoes e teoremas internos ja formalizados em Lean.
+- **Parcial**: camada util e compilando, mas ainda com interfaces, witnesses abstratos ou pacotes intermediarios.
+- **Axiomatico**: a camada ainda consome input classico ou certificado externo explicitamente.
 
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Basic.lean` | `s : ℂ`, `σ := s.re`, `t := s.im`, `δ := σ - 1/2` | [derivacao_tilt_c2_global.md §1](derivacao_tilt_c2_global.md) |
-| `DyadicArith.lean` | `v₂ : ℕ → ℕ`, `k_eff(n) := max(v₂(n-1), v₂(n+1))`, **bijeção Thm 1** | [c2_rota_K §2](c2_rota_K_rigorosamente_fechada.md) |
-| `DiscreteLaplacian.lean` | `Δ² f c := f (c-1) + f (c+1) - 2 * f c`, propriedades básicas | [derivacao_tilt §1, §6](derivacao_tilt_c2_global.md) |
-| `Tilt.lean` | `tilt δ n := (n : ℂ)^(-δ)`, **Thm 2** (`Δ²[tilt 0] = 0`), **Thm 5** (sign-def) | [c2_rota_K §6, §7](c2_rota_K_rigorosamente_fechada.md), [derivacao_tilt §3-§5](derivacao_tilt_c2_global.md) |
-
-**Esforço:** baixo. Tudo é álgebra concreta + Jensen discreto. Mathlib tem `Convex.inner_le_iff`, `StrictConvex` — usar.
-
-### Camada 1 — Operators (~800 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Branch.lean` | `W_∞ s : ℓ²(ℕ) →L ℓ²(ℕ)`, `‖W_∞ s‖² = 2^{1-4σ}/(1-2^{-2σ})` | [nota_offaxis §2](nota_offaxis_c2.md), [c2_op_ramo_invariancia](c2_operador_ramo_invariancia_t_ponte_genuine.md) |
-| `BranchNormBarrier.lean` | `‖W_∞ s‖² = 1 ↔ σ = 1/2` | [nota_offaxis §2.5](nota_offaxis_c2.md) |
-| `Genuine.lean` | `D_∞`, `B_∞`, `F_∞ := D_∞ - B_∞` (Dirichlet series, σ > 1) | [c2_rota_K §1](c2_rota_K_rigorosamente_fechada.md) |
-| `Cutoff.lean` | `D_X(s) := Σ w(n) n^{-s} e^{-n/X}`, `F_X` | [c2_cutoff_adaptativo_quarteto.md](c2_cutoff_adaptativo_quarteto.md) |
-| `BranchToGenuine.lean` | ponte formal | [c2_op_ramo_invariancia §3](c2_operador_ramo_invariancia_t_ponte_genuine.md) |
-
-**Esforço:** médio. Convergência absoluta e Fubini precisam de `Summable.tsum_*` de Mathlib.
-
-### Camada 2 — Identity (~400 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `C0.lean` | `c_0 s := 2^(-2*s) * (2^s - 1) / (2 * 2^s - 1)` | [algebra_Z_igual_zeta.md](algebra_Z_igual_zeta.md) |
-| `C0NonZero.lean` | **Thm 14**: `c_0 s ≠ 0` em `0 < σ < 1`. Lower bound `|c_0| ≥ 0.054` em σ=1/2. | [algebra_Z_igual_zeta.md](algebra_Z_igual_zeta.md) §3 |
-| `FundamentalIdentity.lean` | **Thm 13**: `F_∞ s = c_0 s * ζ s` em σ > 1, via bijeção + Fubini | [c2_rota_K §3](c2_rota_K_rigorosamente_fechada.md) |
-| `MeromorphicExt.lean` | **Thm 17**: continuação para σ > 0 via Teorema da Identidade | [c2_prova_continuacao_Z_zeta.md](c2_prova_continuacao_Z_zeta.md) |
-
-**Esforço:** médio. `Mathlib.NumberTheory.ZetaFunction` tem `riemannZeta` com continuação meromorfa. Usar.
-
-### Camada 3 — Cutoff (~300 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `DecayRate.lean` | **Thm 16**: `|R_X(s)| = O(1/X)` uniforme em compactos σ > 0 | [c2_prova_taxa_decaimento_cutoff.md](c2_prova_taxa_decaimento_cutoff.md), [nota_cutoff_c2.md](nota_cutoff_c2.md) |
-| `Cancellation.lean` | **Thm 4**: `|D_X - B_X| ≤ C/X` (cancela O(X):1) | [c2_rota_K §9](c2_rota_K_rigorosamente_fechada.md) |
-| `Universality.lean` | **Thm 3**: cutoffs Schwartz | [c2_rota_K §8](c2_rota_K_rigorosamente_fechada.md) |
-
-**Esforço:** baixo. `Mathlib.MeasureTheory.Integral.DominatedConvergence`.
-
-### Camada 4 — NearAxis (~600 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Transversality.lean` | **Thm 8**: `(d/ds)^{m_ρ} F_∞ \|_ρ = c_0(ρ) ζ^{(m_ρ)}(ρ) ≠ 0` via Leibniz | [c2_prova_thm8_transversal.md](c2_prova_thm8_transversal.md) |
-| `Amplification.lean` | **Thm 6**: `A(ρ, X) = O(X)` | [c2_rota_K §13](c2_rota_K_rigorosamente_fechada.md) |
-| `TaylorRadius.lean` | `δ*(ρ) := 2 M_1(ρ) / M_2(ρ)` | [c2_lower_bound_transversal_taylor.md](c2_lower_bound_transversal_taylor.md) |
-| `GlobalBound.lean` | **Thm 11**: `δ*(ρ) ≥ 2 / (2A + C * (log γ)^2)` | [c2_certificacao_bound_global.md](c2_certificacao_bound_global.md) |
-| `FXNonZero.lean` | **Lema N**: `F_X s ≠ 0` para `s ∈ Ω_near^+`, `t ≥ T_0` | [c2_bulk_offaxis_glue.md §3](c2_bulk_offaxis_glue.md) |
-
-**Esforço:** alto. Thm 11 usa fórmula de Hadamard + von Mangoldt — pesado. Pode ser `axiom` citando prova papel se Mathlib não tiver Hadamard.
-
-### Camada 5 — Bulk (~400 linhas, das quais ~100 são axiomas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Resolvent.lean` | `T_r θ := 1/(1 - r * exp(I*θ))`, `inf‖T_r‖ = 1/(1+r)` | [c2_quarteto_resolvente_sharpening.md](c2_quarteto_resolvente_sharpening.md) §3 |
-| `QuartetSharp.lean` | `inf‖P_r‖ = (1-r)(1+r²)` | [c2_quarteto_resolvente_sharpening.md](c2_quarteto_resolvente_sharpening.md) §2 |
-| `ClassicalAxioms.lean` | `axiom VK_Ford : ∀ t ≥ 3, ∀ σ ≥ σ_VK(t), \|ζ(σ+it)\| ≥ 1/(K₂ * (log t)^(2/3) * (loglog t)^(1/3))` + Phragmén-Lindelöf + eq. funcional | [c2_bulk_offaxis_route3_tilt.md §6.2-§6.4](c2_bulk_offaxis_route3_tilt.md) |
-| `BulkLowerBound.lean` | **Teorema 6.6**: `\|F_∞ s\| ≥ c_min · exp(-C* * (log T)^(2/3+η))` | [c2_bulk_offaxis_route3_tilt.md §6.6](c2_bulk_offaxis_route3_tilt.md) |
-| `FXNonZeroBulk.lean` | **Lema B**: `F_X s ≠ 0` em `Ω_bulk^+` | [c2_bulk_offaxis_glue.md §3](c2_bulk_offaxis_glue.md) |
-
-**Esforço:** baixo (Resolvent é álgebra), média na composição BulkLowerBound. **Os clássicos são axiomas** com referência Ford 2002 / Titchmarsh.
-
-### Camada 6 — Edge (~300 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `EdgeRight.lean` | **Lema R**: V-K Ford direto, T_0(ε) explícito | [c2_bulk_offaxis_edge_lemma.md §2](c2_bulk_offaxis_edge_lemma.md) |
-| `EdgeLeft.lean` | **Lema L**: equação funcional + Stirling | [c2_bulk_offaxis_edge_lemma.md §3](c2_bulk_offaxis_edge_lemma.md) |
-| `FEdgeNonZero.lean` | **Lema F-edge**: lifting ζ → F_∞ → F_X via c_0 ≠ 0 | [c2_bulk_offaxis_edge_lemma.md §4](c2_bulk_offaxis_edge_lemma.md) |
-
-### Camada 7 — Glue (~250 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Decomposition.lean` | **Lema 2.1**: cobertura por overlaps | [c2_bulk_offaxis_glue.md §2](c2_bulk_offaxis_glue.md) |
-| `Compatibility.lean` | **Lemas 4.1, 4.2**: bulk ≥ near, bulk ≥ edge nas overlaps | [c2_bulk_offaxis_glue.md §4](c2_bulk_offaxis_glue.md) |
-| `UniformCutoff.lean` | **Lema 4.3**: `X(T) = X_bulk(T)` suficiente para todas as três regiões | [c2_bulk_offaxis_glue.md §4.3](c2_bulk_offaxis_glue.md) |
-| `GlueTheorem.lean` | **Teorema da Colagem**: `F_X s ≠ 0` em `Ω`, `t ≥ T_0 = 100` | [c2_bulk_offaxis_glue.md §5](c2_bulk_offaxis_glue.md) |
-
-### Camada 8 — Finite (~100 linhas, mais axioma de certificado)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `FiniteCertificate.lean` | `axiom finite_zero_free : ∀ s ∈ Ω, t ≤ 448, F_X s ≠ 0` (citando log do scan) | [teorema_faixa_diadica_zero_free.md](teorema_faixa_diadica_zero_free.md) |
-| `DyadicCoverage.lean` | enunciado formal do certificado, sem prova interna | idem |
-
-> **Nota.** Verificação numérica de cobertura finita é difícil de internalizar
-> em Lean. Padrão aceito: declarar axioma referenciando hash SHA-256 do
-> log de saída + script reprodutível.
-
-### Camada 9 — Transfer + RH (~200 linhas)
-
-| Arquivo | Conteúdo | Doc-fonte |
-|---|---|---|
-| `Hurwitz.lean` | `F_X → F_∞` uniforme + `F_X ≠ 0 ∀X ⇒ F_∞ ≠ 0 ou F_∞ ≡ 0` | [c2_bulk_offaxis_transfer.md §3](c2_bulk_offaxis_transfer.md) |
-| `ZetaTransfer.lean` | **Teorema Transfer**: `ζ s ≠ 0` em `Ω` | [c2_bulk_offaxis_transfer.md §4](c2_bulk_offaxis_transfer.md) |
-| `RH.lean` | **Teorema RH**: zeros não-triviais em `σ = 1/2` | [c2_bulk_offaxis_transfer.md §5](c2_bulk_offaxis_transfer.md) |
-
-**Esforço:** baixo. Hurwitz está em `Mathlib.Analysis.Complex.Hurwitz` (verificar nome exato).
+| Camada | Status | Arquivos principais | Estado atual |
+|---|---|---|---|
+| Foundations | **Fechado** | `Foundations/Basic.lean`, `DyadicArith.lean`, `DiscreteLaplacian.lean`, `Tilt.lean` | Nucleo discreto/algebrico base da teoria C2 ja formalizado. |
+| Operators | **Fechado** | `Operators/Branch.lean`, `BranchNormBarrier.lean`, `Genuine.lean`, `Cutoff.lean`, `BranchToGenuine.lean` | Camada dos operadores e do numerador `F` ja organizada e build-clean. |
+| Identity | **Fechado** | `Identity/C0.lean`, `C0NonZero.lean`, `FundamentalIdentity.lean`, `MeromorphicExt.lean` | Ja formaliza `c0`, a nao anulacao de `c0` e a passagem `F = c0 * zeta` com extensao meromorfa no formato usado pela cadeia final. |
+| Cutoff | **Parcial** | `Cutoff/Residue.lean`, `DecayRate.lean`, `Universality.lean`, `Cancellation.lean` | Camada presente e integrada, mas hoje funciona principalmente como infraestrutura para glue/Hurwitz. |
+| NearAxis | **Parcial forte** | `NearAxis/Transversality.lean`, `TaylorRadius.lean`, `GlobalBound.lean`, `FXNonZero.lean`, `Amplification.lean` | Ja contem o nucleo abstrato de Thm 8, a algebra de Taylor, `deltaStarLowerModel` e a ponte de witnesses para `nearRegionEventuallyNonvanishing`; a producao analitica concreta desses witnesses ainda nao esta internalizada. |
+| Bulk | **Parcial / Axiomatico** | `Bulk/Resolvent.lean`, `QuartetSharp.lean`, `ClassicalAxioms.lean`, `BulkLowerBound.lean`, `FXNonZeroBulk.lean` | Estrutura pronta e conectada, mas o lower bound pesado ainda depende de input classico e `FXNonZeroBulk` segue como interface operacional. |
+| Edge | **Parcial** | `Edge/EdgeRight.lean`, `Edge/EdgeLeft.lean`, `FEdgeNonZero.lean` | A camada existe, mas a forma final usada na colagem ainda esta exposta como interface. |
+| Glue | **Fechado** | `Glue/Decomposition.lean`, `Compatibility.lean`, `UniformCutoff.lean`, `GlueTheorem.lean` | Geometria off-axis, cobertura `near/bulk/edge`, compatibilidade e teorema de colagem high-height ja formalizados. |
+| Finite | **Parcial / Axiomatico** | `Finite/DyadicCoverage.lean`, `FiniteCertificate.lean` | A cobertura finita e o empacotamento `finite + glue` existem, inclusive com `DefaultFiniteAndGlueData` e `DefaultGlobalBoundData`; o certificado numerico bruto ainda nao foi internalizado como prova concreta. |
+| Transfer | **Parcial forte** | `Transfer/Hurwitz.lean`, `ZetaTransfer.lean`, `RH.lean` | O empacotamento final ate `zeta` e RH ja esta formalizado e compilando; o passo de Hurwitz segue como interface classica explicita. |
+| Numerical | **Fechado / Suporte** | `Numerical/Constants.lean`, `Verification.lean` | Constantes default e infraestrutura numerica auxiliar ja presentes. |
 
 ---
 
-## 5. O que NÃO formalizar (axiomas declarados)
+## 5. O que ainda entra como input externo
 
-Isolados em `Bulk/ClassicalAxioms.lean` + `Edge/*.lean` + `Finite/FiniteCertificate.lean`:
+Hoje os pontos principais ainda nao internalizados como prova Lean completa sao:
 
-| Axioma | Origem | Justificativa |
-|---|---|---|
-| `axiom VK_Ford_2002` | Ford, *Vinogradov's integral and bounds for ζ*, Proc LMS 85 (2002) | Resultado clássico, replicado, não-circular. |
-| `axiom functional_equation` | Riemann 1859, Titchmarsh §2.1 | Em Mathlib como `Complex.riemannZeta_functional_equation`? Verificar. |
-| `axiom phragmen_lindelof_strip` | Titchmarsh §5.65 | Em Mathlib como `Complex.PhragmenLindelof.*`. |
-| `axiom hadamard_product_zeta` | Hadamard 1893 | Pode estar em Mathlib (LSeries.HadamardProduct). |
-| `axiom finite_zero_free_to_448` | Run de [scripts/c2_zero_detector_genuine.py](../scripts/c2_zero_detector_genuine.py) | Cita SHA-256 do log + reprodutibilidade. |
-| `axiom rouche_pilot_T500` | Run de [scripts/c2_rouche_rectangle.py](../scripts/c2_rouche_rectangle.py) | Opcional — não está na cadeia mínima. |
+- `Transfer/Hurwitz.lean`: o passo de Hurwitz esta empacotado pela interface axiomatica `hurwitzTransferOffCriticalStrip`;
+- `Bulk/ClassicalAxioms.lean`: os insumos classicos pesados do regime bulk ainda entram explicitamente como axiomas/hipoteses;
+- `Bulk/FXNonZeroBulk.lean` e `Edge/FEdgeNonZero.lean`: a nao anulacao operacional nessas regioes ainda nao esta toda deduzida por prova interna concreta;
+- `Finite/FiniteCertificate.lean`: o certificado finito ainda e um pacote abstrato, nao um artefato numerico totalmente auditado dentro do kernel;
+- `NearAxis/Amplification.lean`: permanece mais proximo de scaffold do que de camada final fechada;
+- a producao concreta de witnesses de Taylor a partir do objeto genuine real ainda nao foi amarrada de ponta a ponta.
 
-> **Recomendação.** Cada `axiom` vem com docstring contendo: (i) referência
-> bibliográfica completa, (ii) enunciado em prosa, (iii) link para nota
-> interna que cita a referência.
+Esse desenho e deliberado: a cadeia principal nao esconde onde a prova ainda
+depende de input classico ou numerico externo.
 
 ---
 
 ## 6. Mapeamento doc → arquivo Lean
 
-Tabela inversa (cada nota → onde formaliza):
+Tabela inversa principal:
 
 | Documento | Arquivos Lean correspondentes |
 |---|---|
-| [c2_rota_K_rigorosamente_fechada.md](c2_rota_K_rigorosamente_fechada.md) | `Foundations/*`, `Identity/*`, `Cutoff/*`, `NearAxis/Transversality.lean` |
+| [c2_rota_K_rigorosamente_fechada.md](c2_rota_K_rigorosamente_fechada.md) | `Foundations/*`, `Operators/*`, `Identity/*`, `Cutoff/*`, parte do `NearAxis/*` |
 | [algebra_Z_igual_zeta.md](algebra_Z_igual_zeta.md) | `Identity/C0.lean`, `Identity/C0NonZero.lean`, `Identity/FundamentalIdentity.lean` |
 | [c2_prova_continuacao_Z_zeta.md](c2_prova_continuacao_Z_zeta.md) | `Identity/MeromorphicExt.lean` |
 | [c2_prova_thm8_transversal.md](c2_prova_thm8_transversal.md) | `NearAxis/Transversality.lean` |
+| [c2_lower_bound_transversal_taylor.md](c2_lower_bound_transversal_taylor.md) | `NearAxis/TaylorRadius.lean`, `NearAxis/GlobalBound.lean`, `NearAxis/FXNonZero.lean` |
 | [c2_certificacao_bound_global.md](c2_certificacao_bound_global.md) | `NearAxis/GlobalBound.lean`, `Numerical/Constants.lean` |
-| [c2_lower_bound_transversal_taylor.md](c2_lower_bound_transversal_taylor.md) | `NearAxis/TaylorRadius.lean`, `NearAxis/GlobalBound.lean` |
 | [c2_cutoff_adaptativo_quarteto.md](c2_cutoff_adaptativo_quarteto.md) | `Operators/Cutoff.lean`, `Cutoff/DecayRate.lean` |
 | [c2_prova_taxa_decaimento_cutoff.md](c2_prova_taxa_decaimento_cutoff.md) | `Cutoff/DecayRate.lean` |
 | [c2_quarteto_resolvente_sharpening.md](c2_quarteto_resolvente_sharpening.md) | `Bulk/Resolvent.lean`, `Bulk/QuartetSharp.lean` |
 | [nota_offaxis_c2.md](nota_offaxis_c2.md) | `Operators/Branch.lean`, `Operators/BranchNormBarrier.lean` |
 | [c2_operador_ramo_invariancia_t_ponte_genuine.md](c2_operador_ramo_invariancia_t_ponte_genuine.md) | `Operators/BranchToGenuine.lean` |
 | [c2_bulk_offaxis_route3_tilt.md](c2_bulk_offaxis_route3_tilt.md) | `Bulk/ClassicalAxioms.lean`, `Bulk/BulkLowerBound.lean` |
-| [c2_bulk_offaxis_route2_rouche.md](c2_bulk_offaxis_route2_rouche.md) | (opcional, não na cadeia mínima) |
 | [c2_bulk_offaxis_edge_lemma.md](c2_bulk_offaxis_edge_lemma.md) | `Edge/EdgeRight.lean`, `Edge/EdgeLeft.lean`, `Edge/FEdgeNonZero.lean` |
-| [c2_bulk_offaxis_glue.md](c2_bulk_offaxis_glue.md) | `Glue/*.lean` |
-| [c2_bulk_offaxis_transfer.md](c2_bulk_offaxis_transfer.md) | `Transfer/*.lean`, `RH.lean` |
-| [teorema_faixa_diadica_zero_free.md](teorema_faixa_diadica_zero_free.md) | `Finite/FiniteCertificate.lean` (axioma) |
-| [hadamard_von_mongoldt.md](hadamard_von_mongoldt.md) | usado em `NearAxis/GlobalBound.lean` (axioma se Mathlib não cobrir) |
+| [c2_bulk_offaxis_glue.md](c2_bulk_offaxis_glue.md) | `Glue/*.lean`, interfaces regionais de `NearAxis/Bulk/Edge` |
+| [c2_bulk_offaxis_transfer.md](c2_bulk_offaxis_transfer.md) | `Transfer/Hurwitz.lean`, `Transfer/ZetaTransfer.lean`, `Transfer/RH.lean` |
+| [teorema_faixa_diadica_zero_free.md](teorema_faixa_diadica_zero_free.md) | `Finite/DyadicCoverage.lean`, `Finite/FiniteCertificate.lean` |
+| [hadamard_von_mongoldt.md](hadamard_von_mongoldt.md) | usado pela interpretacao do bound global em `NearAxis/GlobalBound.lean` |
+| [c2_resumo_formalizacao_lean.md](../docs/c2_resumo_formalizacao_lean.md) | snapshot de status, nao documento-fonte da prova |
 
-Documentos **não formalizados** (são exploração/diagnóstico, fora da cadeia):
+Documentos fora da cadeia minima formal:
 
-- [c2_pure_carry_barrier_attempt.md](c2_pure_carry_barrier_attempt.md) — exploração negativa
-- [c2_lambda_*.md](c2_lambda_estrutura_profunda.md) — análises tangenciais
-- [cadeia_unica.md](cadeia_unica.md), [fechamento_unificado.md](fechamento_unificado.md) — sínteses, redundantes com cadeia formal
-- [c2_inversao_zeros_via_FFT.md](c2_inversao_zeros_via_FFT.md), [c2_dualidade_primo_zero.md](c2_dualidade_primo_zero.md) — exploração
-- Notas com sufixos `_atualizada`, `_OLF`, etc. — versões superseded
-
----
-
-## 7. Roadmap de implementação
-
-Fases sugeridas em ordem de execução. Cada fase produz um build verde antes de seguir.
-
-### Fase 0 — Setup (1 sessão)
-
-1. `lake new LeanC2` em diretório novo (fora deste repo, ou em `lean/` aqui)
-2. Adicionar Mathlib em `lakefile.lean`
-3. Criar estrutura de diretórios vazia (todos os arquivos com `import Mathlib` + skeleton)
-4. CI básico: `lake build` no GitHub Actions
-
-### Fase 1 — Foundations (2-3 sessões)
-
-`Basic.lean`, `DyadicArith.lean`, `DiscreteLaplacian.lean`, `Tilt.lean`.
-Marco: **Thm 2 e Thm 5 formalizados**.
-
-### Fase 2 — Identity (3-4 sessões)
-
-`C0.lean`, `C0NonZero.lean`, `FundamentalIdentity.lean`, `MeromorphicExt.lean`.
-Marco: **`F_∞ = c_0 * ζ` em `σ > 0`** (Thms 13 + 17).
-
-### Fase 3 — Operators + Cutoff (4-5 sessões)
-
-`Genuine.lean`, `Cutoff.lean`, `DecayRate.lean`, `Branch.lean`.
-Marco: **`|F_X - F_∞| ≤ C/X`** (Thm 16) e barreira `‖W_∞‖² = 1 ⇔ σ=1/2`.
-
-### Fase 4 — NearAxis (5-6 sessões, parte mais técnica)
-
-Marco: **Thm 8 (transversalidade) + Thm 11 (bound global $\delta^*$)**.
-
-### Fase 5 — Bulk + Edge (3-4 sessões, muitos axiomas)
-
-`ClassicalAxioms.lean` define V-K + Phragmén + eq. funcional como axioma.
-Marco: **Lemas N, B, E formalizados**.
-
-### Fase 6 — Glue + Transfer (2-3 sessões)
-
-Marco: **Teorema da Colagem + Teorema RH**.
-
-### Fase 7 — Polimento (~1-2 sessões)
-
-- Verificar `#check @riemann_hypothesis_C2`
-- Auditar lista de axiomas: `#print axioms riemann_hypothesis_C2`
-- Documentação Sphinx ou doc-gen4
-
-**Total estimado:** 20-30 sessões para versão funcional.
+- [c2_bulk_offaxis_route2_rouche.md](../docs/c2_bulk_offaxis_route2_rouche.md): exploracao opcional, nao usada na cadeia minima atual;
+- [c2_inversao_zeros_via_FFT.md](../docs/c2_inversao_zeros_via_FFT.md) e [c2_dualidade_primo_zero.md](../docs/c2_dualidade_primo_zero.md): exploracoes fora do nucleo Lean;
+- [cadeia_unica.md](../docs/cadeia_unica.md) e [fechamento_unificado.md](../docs/fechamento_unificado.md): sinteses conceituais, nao camada de implementacao direta;
+- variantes `_atualizada`, `_OLF` e afins: material de apoio, nao fonte canonical da arvore Lean.
 
 ---
 
-## 8. Convenções
+## 7. Endpoints e APIs já expostos
 
-### Naming
+Identificadores importantes ja presentes na arvore atual:
 
-- Definições: `camelCase` (Mathlib style): `branchOperator`, `cutoffResidue`.
-- Teoremas: `snake_case_descriptive`: `branch_norm_eq_one_iff_sigma_half`, `c0_ne_zero_of_open_strip`.
-- Numerais por extenso: `theorem_eight_transversality` (referenciando o "Teorema 8").
+- `Glue/Decomposition.lean`:
+  `offCriticalStrip`, `stripHeight`, `criticalOffset`, `nearRegion`, `bulkRegion`, `edgeRegion`, `glueCovering`, `nearRegion_mono`.
+- `NearAxis/TaylorRadius.lean`:
+  `taylorExclusionRadius`, `routeK_elo5_nonzero_from_taylor`, `taylorNonvanishingWitness`.
+- `NearAxis/GlobalBound.lean`:
+  `deltaStarLowerModel`, `routeK_thm11_deltaStar_lower_bound_logSq`.
+- `NearAxis/FXNonZero.lean`:
+  `nearRegionEventuallyNonvanishing_of_taylorWitness`, `nearRegionEventuallyNonvanishing_of_ge_deltaStarLowerModel`, `nearRegionEventuallyNonvanishing_of_taylorWitness_of_ge_deltaStarLowerModel`.
+- `Finite/FiniteCertificate.lean`:
+  `DefaultFiniteAndGlueData`, `DefaultGlobalBoundData`, `cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData`, `cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundData`.
+- `Transfer/ZetaTransfer.lean`:
+  `riemannZeta_nonvanishing_offCriticalStrip_of_defaultData`, `riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData`, `routeK_default_offaxis_riemannZeta_nonvanishing`, `routeK_default_globalBound_offaxis_riemannZeta_nonvanishing`.
+- `Transfer/RH.lean`:
+  `RiemannHypothesisC2`, `riemannHypothesisC2_of_defaultData`, `riemannHypothesisC2_of_defaultGlobalBoundData`, `routeK_default_chain_RH`, `routeK_default_globalBound_chain_RH`.
 
-### Estrutura típica de arquivo
-
-```lean
-/-
-Copyright © 2026 [autor].
-Released under Apache 2.0 license as described in LICENSE.
-Author: [user].
-
-Reference: docs/c2_rota_K_rigorosamente_fechada.md §6.
--/
-import Mathlib.Analysis.Complex.Basic
-import LeanC2.Foundations.Basic
-import LeanC2.Foundations.DiscreteLaplacian
-
-namespace LeanC2
-
-/-- Doc-string descrevendo o conteúdo. -/
-theorem theorem_two_tilt_annihilation (c : ℕ) (hc : 4 ≤ c) (δ : ℝ) :
-    discreteLaplacian (fun n => (n : ℝ) ^ (-δ)) c = 0 ↔ δ = 0 := by
-  sorry  -- TODO: prova via convexidade estrita
-
-end LeanC2
-```
-
-### Axiomas
-
-```lean
-/-- **Vinogradov–Korobov, Ford 2002.**
-
-Reference: K. Ford, *Vinogradov's integral and bounds for the Riemann
-zeta function*, Proc. London Math. Soc. **85** (2002), Thm 3.
-
-Constants: K₁ = 57.54, K₂ = 76.2.
-
-Internal note: docs/c2_bulk_offaxis_route3_tilt.md §6.2.
--/
-axiom VK_Ford_2002 :
-    ∀ t : ℝ, 3 ≤ |t| →
-    ∀ σ : ℝ, σ ≥ 1 - 1 / (57.54 * Real.log |t| ^ ((2:ℝ)/3) * Real.log (Real.log |t|) ^ ((1:ℝ)/3)) →
-    ‖riemannZeta (σ + t * I)‖ ≥
-      1 / (76.2 * Real.log |t| ^ ((2:ℝ)/3) * Real.log (Real.log |t|) ^ ((1:ℝ)/3))
-```
-
-### Constantes numéricas
-
-Em `Numerical/Constants.lean`, declarar como `def` racional ou `theorem` com `norm_num`:
-
-```lean
-/-- Constante A do bound global, A = 1.5862. -/
-noncomputable def constA : ℝ := 7931 / 5000  -- = 1.5862
-
-theorem constA_eq : constA = 1.5862 := by norm_num [constA]
-```
+Esses nomes sao hoje a API arquitetural mais util para amarrar novos passos
+sem reabrir a cadeia inteira.
 
 ---
 
-## 9. CI, build, dependências
+## 8. Build, toolchain e CI
 
-`lakefile.toml`:
+Configuracao real atual:
 
-```toml
-name = "LeanC2"
-version = "0.1.0"
-defaultTargets = ["LeanC2"]
+- `lean-toolchain`: `leanprover/lean4:v4.29.1`
+- `lakefile.toml`: pacote `LeanC2`, `defaultTargets = ["LeanC2"]`
+- Mathlib pinned em `v4.29.1`
 
-[leanOptions]
-pp.unicode.fun = true
-relaxedAutoImplicit = false
-weak.linter.mathlibStandardSet = true
-maxSynthPendingDepth = 3
+Build local:
 
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "v4.29.1"
-
-[[lean_lib]]
-name = "LeanC2"
+```bash
+cd /home/thlinux/C2_Hipotese_De_Riemann/Lean
+lake exe cache get
+lake build
 ```
 
-`lean-toolchain`:
+Estado atual:
 
-```
-leanprover/lean4:v4.29.1
-```
+- a arvore Lean inteira ja fecha em `lake build`;
+- o arquivo raiz `LeanC2.lean` ja importa `Cutoff.Residue`, `Finite.DyadicCoverage`, `Numerical.Constants` e `Numerical.Verification`;
+- ainda nao existe `.github/workflows/` no repositorio Lean.
 
-GitHub Actions (`.github/workflows/build.yml`):
-
-```yaml
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-      - run: lake exe cache get && lake build
-      - run: |
-          # Auditar axiomas usados pelo teorema final
-          echo '#print axioms LeanC2.Transfer.RH.riemann_hypothesis_C2' >> AuditAxioms.lean
-          lake env lean AuditAxioms.lean
-```
+Recomendacao pratica de proximo passo para infraestrutura: adicionar um workflow
+minimo de CI que rode `lake exe cache get && lake build` e um audit opcional de
+axiomas para os endpoints finais de `Transfer/RH.lean`.
 
 ---
 
-## 10. Sketch de skeleton inicial
+## 9. Convenções de manutenção
 
-Sugestão para o `LeanC2.lean` raiz (re-export):
+Convencoes que continuam valendo e refletem o estado atual do repo:
 
-```lean
-import LeanC2.Foundations.Basic
-import LeanC2.Foundations.DyadicArith
-import LeanC2.Foundations.DiscreteLaplacian
-import LeanC2.Foundations.Tilt
-
-import LeanC2.Operators.Branch
-import LeanC2.Operators.BranchNormBarrier
-import LeanC2.Operators.Genuine
-import LeanC2.Operators.Cutoff
-import LeanC2.Operators.BranchToGenuine
-
-import LeanC2.Identity.C0
-import LeanC2.Identity.C0NonZero
-import LeanC2.Identity.FundamentalIdentity
-import LeanC2.Identity.MeromorphicExt
-
-import LeanC2.Cutoff.DecayRate
-import LeanC2.Cutoff.Universality
-import LeanC2.Cutoff.Cancellation
-
-import LeanC2.NearAxis.Transversality
-import LeanC2.NearAxis.Amplification
-import LeanC2.NearAxis.TaylorRadius
-import LeanC2.NearAxis.GlobalBound
-import LeanC2.NearAxis.FXNonZero
-
-import LeanC2.Bulk.Resolvent
-import LeanC2.Bulk.QuartetSharp
-import LeanC2.Bulk.ClassicalAxioms
-import LeanC2.Bulk.BulkLowerBound
-import LeanC2.Bulk.FXNonZeroBulk
-
-import LeanC2.Edge.EdgeRight
-import LeanC2.Edge.EdgeLeft
-import LeanC2.Edge.FEdgeNonZero
-
-import LeanC2.Glue.Decomposition
-import LeanC2.Glue.Compatibility
-import LeanC2.Glue.UniformCutoff
-import LeanC2.Glue.GlueTheorem
-
-import LeanC2.Finite.FiniteCertificate
-
-import LeanC2.Transfer.Hurwitz
-import LeanC2.Transfer.ZetaTransfer
-import LeanC2.Transfer.RH
-```
-
-E o teorema final em `Transfer/RH.lean`:
-
-```lean
-/-- **Hipótese de Riemann (forma C2).**
-
-Todos os zeros não-triviais de `riemannZeta` têm parte real `1/2`.
-
-Referência: docs/c2_bulk_offaxis_transfer.md §5.
-
-Inputs clássicos (axiomas em `Bulk.ClassicalAxioms`):
-  - V-K Ford 2002 (Theorem 3)
-  - Equação funcional + Stirling
-  - Phragmén-Lindelöf
-
-Input numérico (axioma em `Finite.FiniteCertificate`):
-  - Cobertura finita t ∈ [0, 448] via scripts/c2_zero_detector_genuine.py
--/
-theorem riemann_hypothesis_C2 :
-    ∀ s : ℂ, riemannZeta s = 0 → s.re ≤ 0 ∨ s.re ≥ 1 ∨ s.re = 1/2 := by
-  sorry
-```
-
-> Note que o enunciado RH no Mathlib é
-> `Complex.riemannHypothesis : ∀ s, riemannZeta s = 0 → s ∈ trivialZeroSet ∨ s.re = 1/2`.
-> Use o nome canônico Mathlib para que `#check` confirme alinhamento.
+- manter a separacao entre prova interna e interface classica explicitamente no tipo dos teoremas;
+- evitar `sorry` na cadeia principal;
+- preferir docstrings curtas com referencia a nota-fonte relevante;
+- usar nomes Lean/Mathlib-style ja estabilizados na base, em vez de placeholders de roadmap;
+- preservar os pacotes default `DefaultFiniteAndGlueData` e `DefaultGlobalBoundData` como pontos de entrada canonicos;
+- quando esta nota for atualizada, sincronizar tambem a copia em `Lean/c2_lean_architecture.md`.
 
 ---
 
-## 11. Referências bibliográficas externas (para axiomas)
+## 10. Próximos passos realistas
+
+1. Internalizar a producao concreta de witnesses de Taylor no near-axis, reduzindo a dependencia de interfaces abstratas.
+2. Substituir as interfaces finais de `FXNonZeroBulk.lean` e `FEdgeNonZero.lean` por camadas mais concretas de prova.
+3. Importar o certificado finito como artefato auditavel, com log e hash reprodutivel.
+4. Auditar `#print axioms` para os endpoints finais de `Transfer/ZetaTransfer.lean` e `Transfer/RH.lean`.
+5. Adicionar CI basico ao repositorio Lean.
+6. Continuar reduzindo a distancia entre a nota arquitetural e a API real exposta pelos arquivos `LeanC2/*.lean`.
+
+---
+
+## 11. Referências externas
 
 | Referência | Uso |
 |---|---|
-| Ford, K. *Vinogradov's integral and bounds for ζ*. Proc LMS 85 (2002). | V-K efetivo |
-| Titchmarsh, E.C. *The Theory of the Riemann Zeta-Function*, 2nd ed. (Heath-Brown), Oxford 1986. | Phragmén-Lindelöf §5.65, eq. funcional §2 |
-| Iwaniec & Kowalski, *Analytic Number Theory*, AMS 2004. | Density estimates, Hadamard |
-| Edwards, H.M. *Riemann's Zeta Function*. | Background histórico |
-| Mossinghoff & Trudgian, *Nonnegative trigonometric polynomials and a zero-free region for ζ*, J. Number Theory (2015). | Refinamentos V-K |
+| Ford, K. *Vinogradov's integral and bounds for ζ*. Proc LMS 85 (2002). | Bounds efetivos tipo V-K |
+| Titchmarsh, E.C. *The Theory of the Riemann Zeta-Function*, 2nd ed. (Heath-Brown), Oxford 1986. | Equacao funcional, Phragmen-Lindelof, analytic continuation |
+| Iwaniec & Kowalski, *Analytic Number Theory*, AMS 2004. | Hadamard, estimativas de densidade, pano de fundo analitico |
+| Edwards, H.M. *Riemann's Zeta Function*. | Referencia historica e estrutural |
+| Mossinghoff & Trudgian, *Nonnegative trigonometric polynomials and a zero-free region for ζ*, J. Number Theory (2015). | Refinamentos de zero-free region |
 
 ---
 
-## 12. Status e próximas decisões
+## 12. Status resumido
 
-| Item | Estado |
+| Item | Estado atual |
 |---|---|
-| Arquitetura desenhada | ✅ este documento |
-| Repositório Lean | ❌ a criar (`lake new LeanC2`) |
-| Fase 0 (setup) | ⏳ próxima |
-| Fases 1-7 | ⏳ a implementar |
+| Repositorio Lean em `Lean/` | ✅ |
+| Toolchain pinned | ✅ Lean `v4.29.1`, Mathlib `v4.29.1` |
+| `LeanC2.lean` reexporta a arvore atual | ✅ |
+| `lake build` da arvore toda | ✅ |
+| Endpoint default ate `ζ ≠ 0` off-axis | ✅ |
+| Endpoint default ate RH em forma C2 | ✅ |
+| Bulk e Edge 100% internalizados | ❌ ainda parciais/interface |
+| Certificado finito internalizado no kernel | ❌ ainda abstrato |
+| CI GitHub Actions configurado | ❌ ainda nao |
 
-**Decisões de design pendentes:**
+Leitura complementar imediata: [c2_resumo_formalizacao_lean.md](../docs/c2_resumo_formalizacao_lean.md).
 
-1. Repositório Lean **dentro** deste workspace (`lean/`) ou **separado** (mais limpo, melhor para CI independente)?
-2. Mathlib quanto: usar versão pinned ou bleeding edge?
-3. Documentação paralela: `doc-gen4` ou só docstrings?
-
-Recomendação: **diretório `lean/` aqui dentro**, Mathlib pinned na versão estável atual, docstrings em português (autoria) + nomes de teoremas em inglês (compatibilidade Mathlib).

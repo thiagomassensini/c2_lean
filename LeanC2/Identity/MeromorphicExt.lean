@@ -25,6 +25,19 @@ def fundamentalIdentityOnPuncturedRightHalfPlane
     (numFun zetaFun : Complex -> Complex) : Prop :=
   ∀ s : Complex, 0 < s.re → s ≠ 1 → numFun s = c0 s * zetaFun s
 
+/--
+Pole-cleared analytic data sufficient to derive the punctured half-plane continuation identity.
+-/
+structure PoleClearedContinuationData
+    (numFun zetaFun : Complex -> Complex) : Prop where
+  hExt : extendsFInfinityOnRightHalfPlane numFun
+  hNum : AnalyticOnNhd ℂ (fun s => (s - 1) * numFun s) openRightHalfPlane
+  hZeta : AnalyticOnNhd ℂ (fun s => (s - 1) * (c0 s * zetaFun s)) openRightHalfPlane
+
+/-- Specialized pole-cleared continuation package for the Riemann zeta channel. -/
+abbrev PoleClearedRiemannZetaData (numFun : Complex -> Complex) : Prop :=
+  PoleClearedContinuationData numFun riemannZeta
+
 /-- Spectral quotient attached to a continued numerator. -/
 noncomputable def spectralZeta (numFun : Complex -> Complex) (s : Complex) : Complex :=
   numFun s / c0 s
@@ -106,6 +119,15 @@ theorem fundamentalIdentityOnPuncturedRightHalfPlane_of_poleClearedAnalytic
           _ = (z - 1) * (c0 z * zetaFun z) := by rw [hId z hz]) s hs
   exact mul_left_cancel₀ (sub_ne_zero.mpr hs1) hProd
 
+/-- Packaged derivation of the punctured continuation identity from pole-cleared analytic data. -/
+theorem fundamentalIdentityOnPuncturedRightHalfPlane_of_data
+    {numFun zetaFun : Complex -> Complex}
+    (hData : PoleClearedContinuationData numFun zetaFun)
+    (hId : fundamentalIdentityOnRightHalfPlane zetaFun) :
+    fundamentalIdentityOnPuncturedRightHalfPlane numFun zetaFun := by
+  exact fundamentalIdentityOnPuncturedRightHalfPlane_of_poleClearedAnalytic
+    hData.hExt hData.hNum hData.hZeta hId
+
 /-- Specialized Thm 17 continuation interface for the Riemann zeta channel. -/
 theorem fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_poleClearedAnalytic
     {numFun : Complex -> Complex}
@@ -115,6 +137,14 @@ theorem fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_poleCleare
     fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta := by
   exact fundamentalIdentityOnPuncturedRightHalfPlane_of_poleClearedAnalytic
     hExt hNum hZeta fundamentalIdentity_riemannZeta_on_right_half_plane
+
+/-- Packaged specialized derivation of the Riemann-zeta continuation identity. -/
+theorem fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_data
+    {numFun : Complex -> Complex}
+    (hData : PoleClearedRiemannZetaData numFun) :
+    fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta := by
+  exact fundamentalIdentityOnPuncturedRightHalfPlane_of_data hData
+    fundamentalIdentity_riemannZeta_on_right_half_plane
 
 /-- Ratio form of Thm 17 away from the pole at `s = 1`. -/
 theorem fundamentalIdentity_ratio_of_punctured_model {numFun zetaFun : Complex -> Complex}

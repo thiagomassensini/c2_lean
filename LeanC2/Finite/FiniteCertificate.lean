@@ -14,6 +14,54 @@ structure DefaultFiniteAndGlueData
   hBulk : bulkRegionEventuallyNonvanishing FX deltaStar defaultEps defaultT0
   hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0
 
+/--
+Default finite-plus-glue data where the near-axis leg is supplied through Taylor witnesses.
+-/
+structure DefaultFiniteAndGlueTaylorData
+    (FX : Nat -> Complex -> Complex) (deltaStar : ℝ -> ℝ) : Prop where
+  hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX defaultCertifiedHeight
+  hDelta : ∀ t : ℝ, 0 ≤ deltaStar t
+  hTaylor :
+    ∃ X0 : Nat,
+      ∀ X : Nat, X0 ≤ X -> ∀ s : Complex,
+        nearRegion deltaStar defaultT0 s ->
+          taylorNonvanishingWitness (FX X s) |criticalOffset s|
+  hBulk : bulkRegionEventuallyNonvanishing FX deltaStar defaultEps defaultT0
+  hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0
+
+/--
+Default global-bound package where the near-axis input is supplied through eventual Taylor witnesses
+rather than directly as a regional nonvanishing hypothesis.
+-/
+structure DefaultGlobalBoundTaylorData (FX : Nat -> Complex -> Complex) : Prop where
+  hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX defaultCertifiedHeight
+  hTaylor :
+    ∃ X0 : Nat,
+      ∀ X : Nat, X0 ≤ X -> ∀ s : Complex,
+        nearRegion deltaStarLowerModel defaultT0 s ->
+          taylorNonvanishingWitness (FX X s) |criticalOffset s|
+  hBulk : bulkRegionEventuallyNonvanishing FX deltaStarLowerModel defaultEps defaultT0
+  hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0
+
+/-- Any global-bound Taylor package upgrades to the canonical default global-bound data package. -/
+theorem defaultFiniteAndGlueData_of_taylorData
+    {FX : Nat -> Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hData : DefaultFiniteAndGlueTaylorData FX deltaStar) :
+    DefaultFiniteAndGlueData FX deltaStar := by
+  refine ⟨hData.hFinite, hData.hDelta, ?_, hData.hBulk, hData.hEdge⟩
+  exact nearRegionEventuallyNonvanishing_of_taylorWitness hData.hTaylor
+
+abbrev DefaultGlobalBoundData (FX : Nat -> Complex -> Complex) : Prop :=
+  DefaultFiniteAndGlueData FX deltaStarLowerModel
+
+/-- Any global-bound Taylor package upgrades to the canonical default global-bound data package. -/
+theorem defaultGlobalBoundData_of_taylorData
+    {FX : Nat -> Complex -> Complex}
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    DefaultGlobalBoundData FX := by
+  refine ⟨hData.hFinite, deltaStarLowerModel_nonneg, ?_, hData.hBulk, hData.hEdge⟩
+  exact nearRegionEventuallyNonvanishing_of_taylorWitness hData.hTaylor
+
 theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_finite_and_high
     {FX : Nat -> Complex -> Complex} {H : ℝ}
     (hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX H)
@@ -64,14 +112,25 @@ theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData
   · exact glueTheorem_highOffCriticalStrip_default
       hData.hDelta hData.hNear hData.hBulk hData.hEdge
 
-abbrev DefaultGlobalBoundData (FX : Nat -> Complex -> Complex) : Prop :=
-  DefaultFiniteAndGlueData FX deltaStarLowerModel
+theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultTaylorData
+    {FX : Nat -> Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hData : DefaultFiniteAndGlueTaylorData FX deltaStar) :
+    cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX := by
+  exact cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData
+    (defaultFiniteAndGlueData_of_taylorData hData)
 
 theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundData
     {FX : Nat -> Complex -> Complex}
     (hData : DefaultGlobalBoundData FX) :
     cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX := by
   exact cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData hData
+
+theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundTaylorData
+    {FX : Nat -> Complex -> Complex}
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX := by
+  exact cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundData
+    (defaultGlobalBoundData_of_taylorData hData)
 
 /-!
 Reserved module for importing external numerical certificates as explicit assumptions.
