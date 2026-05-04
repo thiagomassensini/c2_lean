@@ -18,6 +18,13 @@ def cutoffConvergesLocallyUniformlyOnOffCriticalStrip
 def cutoffAnalyticOnOffCriticalStrip (FX : Nat -> Complex -> Complex) : Prop :=
   ∀ X : Nat, AnalyticOnNhd ℂ (FX X) offCriticalStripSet
 
+/-- Combined cutoff approximation data feeding the Hurwitz step on the off-critical strip. -/
+structure CutoffApproximationData
+    (FX : Nat -> Complex -> Complex)
+    (numFun : Complex -> Complex) : Prop where
+  hAnalytic : cutoffAnalyticOnOffCriticalStrip FX
+  hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun
+
 /--
 Classical Hurwitz transfer on the off-critical strip.
 
@@ -40,6 +47,14 @@ theorem offCriticalStripNonvanishing_of_hurwitz
     offCriticalStripNonvanishing numFun :=
   hurwitzTransferOffCriticalStrip hAnalytic hConv hFX
 
+/-- Hurwitz step driven by the bundled cutoff approximation package. -/
+theorem offCriticalStripNonvanishing_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hApprox : CutoffApproximationData FX numFun)
+    (hFX : cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX) :
+    offCriticalStripNonvanishing numFun :=
+  offCriticalStripNonvanishing_of_hurwitz hApprox.hAnalytic hApprox.hConv hFX
+
 /-- Coordinate form of the Hurwitz step on the off-critical strip. -/
 theorem routeK_hurwitz_nonzero_offaxis
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -52,6 +67,16 @@ theorem routeK_hurwitz_nonzero_offaxis
   exact offCriticalStripNonvanishing_of_hurwitz hAnalytic hConv hFX
     ((sigma : Complex) + t * Complex.I)
     ⟨by simpa using hsigma0, by simpa using hsigma1, by simpa using hhalf⟩
+
+/-- Coordinate Hurwitz transfer using the bundled cutoff approximation package. -/
+theorem routeK_hurwitz_nonzero_offaxis_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hApprox : CutoffApproximationData FX numFun)
+    (hFX : cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX)
+    {sigma t : Real} (hsigma0 : 0 < sigma) (hsigma1 : sigma < 1)
+    (hhalf : sigma ≠ (1 : ℝ) / 2) :
+    numFun ((sigma : Complex) + t * Complex.I) ≠ 0 := by
+  exact routeK_hurwitz_nonzero_offaxis hApprox.hAnalytic hApprox.hConv hFX hsigma0 hsigma1 hhalf
 
 /-!
 Scaffold for the Hurwitz step `F_X -> numFun`.

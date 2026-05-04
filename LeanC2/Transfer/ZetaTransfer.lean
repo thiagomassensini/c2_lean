@@ -138,6 +138,15 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData hId hAnalytic hConv hData
 
+theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
+    hId hApprox.hAnalytic hApprox.hConv hData
+
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -147,6 +156,15 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorDat
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
     hId hAnalytic hConv (defaultGlobalBoundData_of_taylorData hData)
+
+theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
+    hId hApprox.hAnalytic hApprox.hConv hData
 
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedAnalytic
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -160,6 +178,16 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_p
     hAnalytic hConv hData
 
 theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedAnalytic
+    hIdData hApprox.hAnalytic hApprox.hConv hData
+
+theorem
   riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedAnalytic
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hIdData : PoleClearedRiemannZetaData numFun)
@@ -170,6 +198,17 @@ theorem
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     (fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_data hIdData)
     hAnalytic hConv hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
+    (fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_data hIdData)
+    hApprox.hAnalytic hApprox.hConv hData
 
 theorem routeK_default_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
@@ -200,6 +239,15 @@ theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
     hId hAnalytic hConv hData
 
+theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
+    hId hApprox hData
+
 theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -210,6 +258,15 @@ theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     hId hAnalytic hConv hData
 
+theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
+    hId hApprox hData
+
 theorem routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hIdData : PoleClearedRiemannZetaData numFun)
@@ -219,6 +276,16 @@ theorem routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedAnalytic
     hIdData hAnalytic hConv hData
+
+theorem
+    routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
+    hIdData hApprox hData
 
 theorem
   routeK_default_globalBound_taylor_poleCleared_offaxis_riemannZeta_nonvanishing
@@ -234,6 +301,17 @@ theorem
     hAnalytic
     hConv
     hData
+
+theorem
+    routeK_default_globalBound_taylor_poleCleared_offaxis_riemannZeta_nonvanishing_of_cutoffData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hApprox : CutoffApproximationData FX numFun)
+    (hData : DefaultGlobalBoundTaylorData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
+    (fundamentalIdentity_riemannZeta_on_puncturedRightHalfPlane_of_data hIdData)
+    hApprox.hAnalytic hApprox.hConv hData
 
 /-!
 Transfer layer from continued numerator nonvanishing to zeta nonvanishing.
