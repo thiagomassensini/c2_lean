@@ -119,6 +119,15 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultData
   apply riemannZeta_nonvanishing_offCriticalStrip_of_hurwitz hId hAnalytic hConv
   exact cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData hData
 
+theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData hId hAnalytic hConv hData
+
 theorem routeK_default_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -127,6 +136,16 @@ theorem routeK_default_offaxis_riemannZeta_nonvanishing
     (hData : DefaultFiniteAndGlueData FX deltaStar) :
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData hId hAnalytic hConv hData
+
+theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
+    hId hAnalytic hConv hData
 
 /-!
 Transfer layer from continued numerator nonvanishing to zeta nonvanishing.

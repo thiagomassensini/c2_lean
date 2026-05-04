@@ -99,6 +99,17 @@ theorem riemannHypothesisC2_of_defaultData
   apply riemannHypothesisC2_of_offCriticalStripNonvanishing
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData hId hAnalytic hConv hData
 
+theorem riemannHypothesisC2_of_defaultGlobalBoundData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
+    hId hAnalytic hConv hData
+
 theorem routeK_default_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -107,6 +118,15 @@ theorem routeK_default_chain_RH
     (hData : DefaultFiniteAndGlueData FX deltaStar) :
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultData hId hAnalytic hConv hData
+
+theorem routeK_default_globalBound_chain_RH
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundData FX) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData hId hAnalytic hConv hData
 
 /-!
 Final Riemann-Hypothesis packaging in the C2 architecture.
