@@ -90,6 +90,30 @@ theorem canonicalCutoffResidualVanishesLocallyUniformlyOnOffCriticalStrip_of_coe
   exact cutoffResidualVanishesLocallyUniformlyOnOffCriticalStrip_of_OInv
     (canonicalCutoffResidual_isOInvLocallyUniformlyOnOffCriticalStrip_of_coeffBound hCoeff)
 
+theorem canonicalCutoffResidualCoeffUniformlyBoundedOnCompacts_of_re_ge
+    {σ0 : Real} (hσ0 : 2 < σ0) :
+    ∀ K : Set Complex, IsCompact K -> K ⊆ {s : Complex | σ0 <= s.re} ->
+      ∃ C : Real, 0 <= C ∧
+        ∀ X : Nat, ∀ s ∈ K, canonicalCutoffResidualCoeff s X <= C := by
+  intro K hK hKσ
+  rcases canonicalCutoffResidualCoeff_bounded_of_re_ge hσ0 with ⟨C, hCnonneg, hC⟩
+  refine ⟨C, hCnonneg, ?_⟩
+  intro X s hs
+  exact hC X s (hKσ hs)
+
+theorem canonicalCutoffResidualIsOInvOnCompacts_of_re_ge
+    {σ0 : Real} (hσ0 : 2 < σ0) :
+    ∀ K : Set Complex, IsCompact K -> K ⊆ {s : Complex | σ0 <= s.re} ->
+      ∃ C : Real, 0 <= C ∧
+        ∀ X : Nat, ∀ s ∈ K, ‖canonicalCutoffResidual X s‖ <= C / cutoffScale X := by
+  intro K hK hKσ
+  rcases canonicalCutoffResidualCoeffUniformlyBoundedOnCompacts_of_re_ge hσ0 K hK hKσ with
+      ⟨C, hCnonneg, hCoeff⟩
+  refine ⟨C, hCnonneg, ?_⟩
+  intro X s hs
+  exact le_trans (norm_canonicalCutoffResidual_le X s)
+    (div_le_div_of_nonneg_right (hCoeff X s hs) (le_of_lt (cutoffScale_pos X)))
+
 theorem cutoffConvergesLocallyUniformlyOnOffCriticalStrip_of_add_residual
     {FX GX RX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hDecomp : ∀ X : Nat, ∀ s : Complex, FX X s = GX X s + RX X s)
