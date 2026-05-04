@@ -15,6 +15,7 @@ import LeanC2.Identity.FundamentalIdentity
 import LeanC2.Identity.MeromorphicExt
 
 import LeanC2.Cutoff.Residue
+import LeanC2.Cutoff.DominantQuartet
 import LeanC2.Cutoff.DecayRate
 import LeanC2.Cutoff.Universality
 import LeanC2.Cutoff.Cancellation

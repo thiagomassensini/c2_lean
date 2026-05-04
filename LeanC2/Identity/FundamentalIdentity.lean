@@ -105,20 +105,24 @@ theorem oddZeta_factorization_riemannZeta :
       rw [hpf]
       simp
 
-lemma norm_shellRatio_lt_one {s : Complex} (hs : 1 < s.re) : ‖shellRatio s‖ < 1 := by
-  have hpow : (2 : ℝ) ^ (-s.re) < 1 := by
-    exact Real.rpow_lt_one_of_one_lt_of_neg one_lt_two (by linarith)
-  have hpow_nonneg : 0 ≤ (2 : ℝ) ^ (-s.re) := by positivity
+lemma norm_shellRatio_eq (s : Complex) : ‖shellRatio s‖ = (1 / 2 : ℝ) * (2 : ℝ) ^ (-s.re) := by
   have hcpow : ‖((2 : Complex) ^ (-s))‖ = (2 : ℝ) ^ (-s.re) := by
-    simpa using
-      (Complex.norm_natCast_cpow_of_re_ne_zero 2 (s := -s)
-        (Complex.re_neg_ne_zero_of_one_lt_re hs))
-  have hnorm : ‖shellRatio s‖ = (1 / 2 : ℝ) * (2 : ℝ) ^ (-s.re) := by
-    rw [shellRatio, norm_mul, norm_div, norm_one]
-    norm_num
-    rw [hcpow]
-  rw [hnorm]
+    simpa using (Complex.norm_natCast_cpow_of_pos (by decide : 0 < 2) (-s))
+  rw [shellRatio, norm_mul, norm_div, norm_one]
+  norm_num
+  rw [hcpow]
+
+lemma norm_shellRatio_lt_one_of_re_gt_neg_one {s : Complex}
+  (hs : -1 < s.re) : ‖shellRatio s‖ < 1 := by
+  have hexp : -s.re < (1 : ℝ) := by
+    linarith
+  have hpow : (2 : ℝ) ^ (-s.re) < 2 := by
+    simpa [Real.rpow_one] using Real.rpow_lt_rpow_of_exponent_lt one_lt_two hexp
+  rw [norm_shellRatio_eq s]
   nlinarith
+
+lemma norm_shellRatio_lt_one {s : Complex} (hs : 1 < s.re) : ‖shellRatio s‖ < 1 := by
+  exact norm_shellRatio_lt_one_of_re_gt_neg_one (by linarith)
 
 /-- The center-only double series factorizes into the shell coefficient times the odd channel. -/
 theorem centerSeries_eq_centerCoeff_mul_oddZeta {s : Complex} (hs : 1 < s.re) :

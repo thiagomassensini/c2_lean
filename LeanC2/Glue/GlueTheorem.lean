@@ -5,6 +5,7 @@ import LeanC2.Glue.UniformCutoff
 import LeanC2.NearAxis.FXNonZero
 import LeanC2.NearAxis.GlobalBound
 import LeanC2.Numerical.Constants
+import LeanC2.Operators.Cutoff
 
 namespace LeanC2
 
@@ -37,6 +38,33 @@ theorem glueTheorem_highOffCriticalStrip_deltaStarLowerModel
     (hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0) :
     cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip FX defaultT0 := by
   exact glueTheorem_highOffCriticalStrip_default deltaStarLowerModel_nonneg hNear hBulk hEdge
+
+theorem glueTheorem_highOffCriticalStrip_of_canonicalCutoffFamily
+    {deltaStar : ℝ -> ℝ} {eps T0 : ℝ}
+    (hCover : glueCovering deltaStar eps T0)
+    (hNear : nearRegionEventuallyNonvanishing canonicalCutoffFamily deltaStar T0)
+    (hBulk : bulkRegionEventuallyNonvanishing canonicalCutoffFamily deltaStar eps T0)
+    (hEdge : edgeRegionEventuallyNonvanishing canonicalCutoffFamily eps T0) :
+    cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip canonicalCutoffFamily T0 := by
+  exact glueTheorem_highOffCriticalStrip hCover hNear hBulk hEdge
+
+theorem glueTheorem_highOffCriticalStrip_default_of_canonicalCutoffFamily
+    {deltaStar : ℝ -> ℝ}
+    (hDelta : ∀ t : ℝ, 0 ≤ deltaStar t)
+    (hNear : nearRegionEventuallyNonvanishing canonicalCutoffFamily deltaStar defaultT0)
+    (hBulk : bulkRegionEventuallyNonvanishing canonicalCutoffFamily deltaStar defaultEps defaultT0)
+    (hEdge : edgeRegionEventuallyNonvanishing canonicalCutoffFamily defaultEps defaultT0) :
+    cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip canonicalCutoffFamily defaultT0 := by
+  exact glueTheorem_highOffCriticalStrip_default hDelta hNear hBulk hEdge
+
+theorem glueTheorem_highOffCriticalStrip_deltaStarLowerModel_of_canonicalCutoffFamily
+    (hNear : nearRegionEventuallyNonvanishing canonicalCutoffFamily deltaStarLowerModel defaultT0)
+    (hBulk :
+      bulkRegionEventuallyNonvanishing
+        canonicalCutoffFamily deltaStarLowerModel defaultEps defaultT0)
+    (hEdge : edgeRegionEventuallyNonvanishing canonicalCutoffFamily defaultEps defaultT0) :
+    cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip canonicalCutoffFamily defaultT0 := by
+  exact glueTheorem_highOffCriticalStrip_deltaStarLowerModel hNear hBulk hEdge
 
 /-!
 Scaffold for the global gluing theorem.

@@ -391,6 +391,17 @@ theorem routeK_default_globalBound_chain_RH_of_canonicalCutoffFamily
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_canonicalCutoffFamily hId hConv hData
 
+theorem routeK_default_globalBound_chain_RH_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_sharpCutoff_coeffBound
+    hId hSharp hResidual hData
+
 theorem routeK_default_globalBound_taylor_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -426,6 +437,17 @@ theorem routeK_default_globalBound_taylor_chain_RH_of_canonicalCutoffFamily
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily hId hConv hData
+
+theorem routeK_default_globalBound_taylor_chain_RH_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_sharpCutoff_coeffBound
+    hId hSharp hResidual hData
 
 theorem routeK_default_globalBound_poleCleared_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -466,6 +488,17 @@ theorem routeK_default_globalBound_poleCleared_chain_RH_of_canonicalCutoffFamily
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
     hIdData hConv hData
+
+theorem routeK_default_globalBound_poleCleared_chain_RH_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedSharpCutoff_coeffBound
+    hIdData hSharp hResidual hData
 
 theorem routeK_default_globalBound_taylor_poleCleared_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -512,6 +545,17 @@ theorem routeK_default_globalBound_taylor_poleCleared_chain_RH_of_canonicalCutof
     hIdData
     hConv
     hData
+
+theorem routeK_default_globalBound_taylor_poleCleared_chain_RH_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedSharpCutoff_coeffBound
+    hIdData hSharp hResidual hData
 
 /-!
 Final Riemann-Hypothesis packaging in the C2 architecture.
