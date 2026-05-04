@@ -1,4 +1,5 @@
 import Mathlib
+import LeanC2.Identity.FundamentalIdentity
 import LeanC2.Operators.Cutoff
 
 namespace LeanC2
@@ -298,6 +299,132 @@ theorem norm_canonicalCutoffResidual_le
     ‖canonicalCutoffResidual X s‖ <= canonicalCutoffResidualCoeff s X / cutoffScale X := by
   simpa [canonicalCutoffResidual, canonicalCutoffResidualCoeff] using
     norm_cutoffResidualFinite_le X s (cutoffDepth X) (X + 1)
+
+lemma cutoffResidualCoeffLeg_shift_le {s : Complex} (hs : 2 < s.re)
+    (j m : Nat) (epsilon : BranchSign) :
+    (natDescendant (j + 2) epsilon (oddCore m) : Real) *
+        ‖legTerm s (j + 2) m epsilon‖ <=
+      ‖dyadicComplexWeight (j + 2)‖ *
+        ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+  let n := natDescendant (j + 2) epsilon (oddCore m)
+  have hs1 : 1 < s.re := lt_trans one_lt_two hs
+  have hsShift : 1 < (s - 1).re := by
+    have hShift : 1 < s.re - 1 := by linarith
+    simpa [Complex.sub_re] using hShift
+  have hk : 2 <= j + 2 := by omega
+  have hn : 0 < n := by
+    dsimp [n]
+    exact natDescendant_oddCore_pos (j + 2) m epsilon hk
+  have hNormNeg : ‖(((n : Nat) : Complex) ^ (-s))‖ = (n : Real) ^ (-s.re) := by
+    dsimp [n]
+    simpa using
+      (Complex.norm_natCast_cpow_of_re_ne_zero n (s := -s)
+        (Complex.re_neg_ne_zero_of_one_lt_re hs1))
+  have hNormShift : ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ = (n : Real) ^ (1 - s.re) := by
+    dsimp [n]
+    simpa [Complex.sub_re, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
+      (Complex.norm_natCast_cpow_of_re_ne_zero n (s := -(s - 1))
+        (Complex.re_neg_ne_zero_of_one_lt_re hsShift))
+  have hMulNorm : (n : Real) * ‖(((n : Nat) : Complex) ^ (-s))‖ =
+      ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ := by
+    rw [hNormNeg, hNormShift]
+    calc
+      (n : Real) * (n : Real) ^ (-s.re) = (n : Real) ^ (-s.re) * (n : Real) := by rw [mul_comm]
+      _ = (n : Real) ^ (-s.re) * (n : Real) ^ (1 : ℝ) := by rw [Real.rpow_one]
+      _ = (n : Real) ^ ((-s.re) + 1) := by rw [← Real.rpow_add (by exact_mod_cast hn)]
+      _ = (n : Real) ^ (1 - s.re) := by congr 1; ring
+  have hAntitone :
+      ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ <=
+        ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+    dsimp [n]
+    exact norm_natCast_cpow_neg_antitone hsShift
+      (oddCore_pos m) (oddCore_le_natDescendant_shift j m epsilon)
+  unfold legTerm
+  rw [norm_mul]
+  calc
+    (n : Real) * (‖dyadicComplexWeight (j + 2)‖ * ‖(((n : Nat) : Complex) ^ (-s))‖)
+        = ‖dyadicComplexWeight (j + 2)‖ *
+            ((n : Real) * ‖(((n : Nat) : Complex) ^ (-s))‖) := by ring
+    _ = ‖dyadicComplexWeight (j + 2)‖ * ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ := by
+          rw [hMulNorm]
+    _ <= ‖dyadicComplexWeight (j + 2)‖ * ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+          exact mul_le_mul_of_nonneg_left hAntitone (norm_nonneg _)
+
+lemma cutoffResidualCoeffPair_shift_le {s : Complex} (hs : 2 < s.re) (j m : Nat) :
+    (natDescendant (j + 2) BranchSign.minus (oddCore m) : Real) *
+        ‖legTerm s (j + 2) m BranchSign.minus‖ +
+      (natDescendant (j + 2) BranchSign.plus (oddCore m) : Real) *
+        ‖legTerm s (j + 2) m BranchSign.plus‖ <=
+      ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
+        ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+  have hminus := cutoffResidualCoeffLeg_shift_le hs j m BranchSign.minus
+  have hplus := cutoffResidualCoeffLeg_shift_le hs j m BranchSign.plus
+  calc
+    (natDescendant (j + 2) BranchSign.minus (oddCore m) : Real) *
+          ‖legTerm s (j + 2) m BranchSign.minus‖ +
+        (natDescendant (j + 2) BranchSign.plus (oddCore m) : Real) *
+          ‖legTerm s (j + 2) m BranchSign.plus‖
+      <= ‖dyadicComplexWeight (j + 2)‖ * ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ +
+          ‖dyadicComplexWeight (j + 2)‖ * ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ :=
+            add_le_add hminus hplus
+    _ = ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
+          ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+          rw [norm_mul, Complex.norm_two]
+          ring
+
+lemma canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re {s : Complex}
+    (hs : 2 < s.re) (X : Nat) :
+    canonicalCutoffResidualCoeff s X <=
+      ∑ m ∈ Finset.range (X + 1),
+        ∑ j ∈ Finset.range (X + 1),
+          ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
+            ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+  unfold canonicalCutoffResidualCoeff cutoffResidualFiniteCoeff cutoffDepth
+  refine Finset.sum_le_sum ?_
+  intro m hm
+  rw [depthWindow_eq_Ico_succ, Finset.sum_Ico_eq_sum_range]
+  refine Finset.sum_le_sum ?_
+  intro j hj
+  simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
+    cutoffResidualCoeffPair_shift_le hs j m
+
+theorem canonicalCutoffResidualCoeff_bounded_of_two_lt_re {s : Complex}
+    (hs : 2 < s.re) :
+    ∃ C : Real, 0 <= C ∧ ∀ X : Nat, canonicalCutoffResidualCoeff s X <= C := by
+  let coeff2 : Nat -> Real := fun j => ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖
+  let oddNorm : Nat -> Real := fun m => ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖
+  have hsShift : 1 < (s - 1).re := by
+    have hShift : 1 < s.re - 1 := by linarith
+    simpa [Complex.sub_re] using hShift
+  have hcoeff2 : Summable coeff2 := by
+    simpa [coeff2] using summable_norm_const_dyadicWeight_shift (2 : Complex)
+  have hodd : Summable oddNorm := by
+    simpa [oddNorm] using summable_norm_oddCore_cpow_neg (s := s - 1) hsShift
+  refine ⟨(∑' j : Nat, coeff2 j) * ∑' m : Nat, oddNorm m, by positivity, ?_⟩
+  intro X
+  refine (canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re hs X).trans ?_
+  calc
+    ∑ m ∈ Finset.range (X + 1), ∑ j ∈ Finset.range (X + 1), coeff2 j * oddNorm m
+        <= ∑ m ∈ Finset.range (X + 1), ((∑' j : Nat, coeff2 j) * oddNorm m) := by
+            refine Finset.sum_le_sum ?_
+            intro m hm
+            refine (Summable.sum_le_tsum (Finset.range (X + 1)) (fun j hj => by positivity)
+              (hcoeff2.mul_right (oddNorm m))).trans_eq ?_
+            simpa [coeff2] using hcoeff2.tsum_mul_right (oddNorm m)
+    _ <= (∑' j : Nat, coeff2 j) * ∑' m : Nat, oddNorm m := by
+          refine (Summable.sum_le_tsum (Finset.range (X + 1)) (fun m hm => by positivity)
+            (hodd.mul_left (∑' j : Nat, coeff2 j))).trans_eq ?_
+          simpa [oddNorm, mul_assoc, mul_left_comm, mul_comm] using
+            hodd.tsum_mul_left (∑' j : Nat, coeff2 j)
+
+theorem norm_canonicalCutoffResidual_le_const_div_of_two_lt_re {s : Complex}
+    (hs : 2 < s.re) :
+    ∃ C : Real, 0 <= C ∧ ∀ X : Nat, ‖canonicalCutoffResidual X s‖ <= C / cutoffScale X := by
+  rcases canonicalCutoffResidualCoeff_bounded_of_two_lt_re hs with ⟨C, hCnonneg, hC⟩
+  refine ⟨C, hCnonneg, ?_⟩
+  intro X
+  exact le_trans (norm_canonicalCutoffResidual_le X s)
+    (div_le_div_of_nonneg_right (hC X) (le_of_lt (cutoffScale_pos X)))
 
 /-!
 Scaffold for the residue term `R_X = D_X - D_infty`.
