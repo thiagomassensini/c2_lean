@@ -31,19 +31,9 @@ theorem routeK_thm11_deltaStar_lower_bound_logSq
     (hm : 1 ≤ m) (hM₂pos : 0 < M₂)
     (hM₂le : M₂ ≤ 2 * constA + constC * (Real.log γ) ^ 2) :
     deltaStarLowerModel γ ≤ 2 * m / M₂ := by
-  unfold deltaStarLowerModel
-  have hDenPos : 0 < 2 * constA + constC * (Real.log γ) ^ 2 :=
-    deltaStarLowerModel_den_pos γ
-  have hFirst : 2 / (2 * constA + constC * (Real.log γ) ^ 2) ≤ 2 / M₂ := by
-    have hInv : 1 / (2 * constA + constC * (Real.log γ) ^ 2) ≤ 1 / M₂ := by
-      exact one_div_le_one_div_of_le hM₂pos hM₂le
-    simpa [div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm] using
-      mul_le_mul_of_nonneg_left hInv (by norm_num : 0 ≤ (2 : ℝ))
-  have hSecond : 2 / M₂ ≤ 2 * m / M₂ := by
-    have hMul : (2 : ℝ) ≤ 2 * m := by
-      nlinarith
-    exact div_le_div_of_nonneg_right hMul hM₂pos.le
-  exact le_trans hFirst hSecond
+  simpa [deltaStarLowerModel, taylorExclusionRadius] using
+    routeK_thm10_deltaStar_lower_bound_logSq
+      m M₂ constA constC γ hm hM₂pos constA_nonneg constC_nonneg hM₂le
 
 /-!
 Scaffold for Thm 11: global lower bound on `delta*`.
