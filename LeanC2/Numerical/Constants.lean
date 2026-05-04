@@ -7,9 +7,20 @@ noncomputable def constC : Real := 169 / 1000
 noncomputable def constK1 : Real := 2877 / 50
 noncomputable def constK2 : Real := 381 / 5
 noncomputable def constCT : Real := 531 / 4
+noncomputable def defaultEps : Real := 1 / 20
 
 def defaultX : Nat := 8850
 def defaultT0 : Real := 100
+def defaultCertifiedHeight : Real := 448
+
+theorem defaultEps_pos : 0 < defaultEps := by
+  norm_num [defaultEps]
+
+theorem defaultEps_nonneg : 0 ≤ defaultEps := by
+  exact le_of_lt defaultEps_pos
+
+theorem defaultT0_le_defaultCertifiedHeight : defaultT0 ≤ defaultCertifiedHeight := by
+  norm_num [defaultT0, defaultCertifiedHeight]
 
 /-!
 Numeric constants fixed by the current C2 proof chain.

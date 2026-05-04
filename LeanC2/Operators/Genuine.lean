@@ -55,6 +55,10 @@ noncomputable def bracketTerm (s : Complex) (k m : Nat) : Complex :=
 noncomputable def centerTerm (s : Complex) (k m : Nat) : Complex :=
   (2 : Complex) * dyadicComplexWeight k * ((((centerNat k m : Nat) : Complex) ^ (-s)))
 
+/-- Common shell ratio appearing in the geometric factorization of the center series. -/
+noncomputable def shellRatio (s : Complex) : Complex :=
+  ((1 : Complex) / 2) * ((2 : Complex) ^ (-s))
+
 /-- Finite depth window used for exact algebraic partial sums. -/
 def depthWindow (K : Nat) : Finset Nat :=
   Finset.Icc 2 K
@@ -71,13 +75,25 @@ noncomputable def partialBCore (s : Complex) (K m : Nat) : Complex :=
 noncomputable def centerPartial (s : Complex) (K m : Nat) : Complex :=
   ∑ k ∈ depthWindow K, centerTerm s k m
 
+/-- Finite geometric coefficient multiplying the odd-core Dirichlet factor. -/
+noncomputable def centerCoeffPartial (s : Complex) (K : Nat) : Complex :=
+  ∑ k ∈ depthWindow K, (2 : Complex) * shellRatio s ^ k
+
 /-- Finite algebraic numerator attached to one odd core. -/
 noncomputable def partialFCore (s : Complex) (K m : Nat) : Complex :=
   partialDCore s K m - partialBCore s K m
 
+/-- Finite partial odd Dirichlet series over the first `M` odd cores. -/
+noncomputable def oddZetaPartial (s : Complex) (M : Nat) : Complex :=
+  ∑ m ∈ Finset.range M, ((((oddCore m : Nat) : Complex) ^ (-s)))
+
 /-- Positive odd Dirichlet series written with the enumerator `oddCore`. -/
 noncomputable def oddZeta (s : Complex) : Complex :=
   ∑' m : Nat, ((((oddCore m : Nat) : Complex) ^ (-s)))
+
+/-- Closed geometric shell coefficient expected after summing the depth variable. -/
+noncomputable def centerCoeff (s : Complex) : Complex :=
+  (2 : Complex) * shellRatio s ^ 2 / (1 - shellRatio s)
 
 /-- Infinite direct odd-leg channel. -/
 noncomputable def DInfinity (s : Complex) : Complex :=

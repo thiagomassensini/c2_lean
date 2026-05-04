@@ -4,8 +4,112 @@ import LeanC2.Transfer.ZetaTransfer
 
 namespace LeanC2
 
+/-- C2-form statement of RH: every zero in the open critical strip lies on the critical line. -/
+def RiemannHypothesisC2 : Prop :=
+  ∀ s : Complex, riemannZeta s = 0 → 0 < s.re → s.re < 1 → s.re = (1 : ℝ) / 2
+
+/-- Off-axis nonvanishing on the critical strip implies the C2 form of RH. -/
+theorem riemannHypothesisC2_of_offCriticalStripNonvanishing
+    (hOff : offCriticalStripNonvanishing riemannZeta) :
+    RiemannHypothesisC2 := by
+  intro s hz hs0 hs1
+  by_contra hsHalf
+  exact hOff s ⟨hs0, hs1, hsHalf⟩ hz
+
+/-- Final RH packaging from nonvanishing of the continued numerator on the off-critical strip. -/
+theorem riemannHypothesisC2_of_numFunNonvanishing
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hNum : offCriticalStripNonvanishing numFun) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_numFunNonvanishing hId hNum
+
+/-- Final RH packaging directly from a nonvanishing cutoff family and the Hurwitz bridge. -/
+theorem riemannHypothesisC2_of_hurwitz
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+  (hFX : cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_hurwitz hId hAnalytic hConv hFX
+
+/-- Final RH packaging from finite coverage plus high-height gluing. -/
+theorem riemannHypothesisC2_of_finite_and_high
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {H : ℝ}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX H)
+    (hHigh : cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip FX H) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_finite_and_high
+    hId hAnalytic hConv hFinite hHigh
+
+theorem riemannHypothesisC2_of_finite_and_high_of_le
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {T0 H : ℝ}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hT : T0 ≤ H)
+    (hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX H)
+    (hHigh : cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip FX T0) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_finite_and_high_of_le
+    hId hAnalytic hConv hT hFinite hHigh
+
+theorem riemannHypothesisC2_of_default_finite_and_high
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX defaultCertifiedHeight)
+    (hHigh : cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip FX defaultT0) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_default_finite_and_high
+    hId hAnalytic hConv hFinite hHigh
+
+theorem riemannHypothesisC2_of_default_finite_and_glue
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hDelta : ∀ t : ℝ, 0 ≤ deltaStar t)
+    (hNear : nearRegionEventuallyNonvanishing FX deltaStar defaultT0)
+    (hBulk : bulkRegionEventuallyNonvanishing FX deltaStar defaultEps defaultT0)
+    (hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0)
+    (hFinite : cutoffFamilyEventuallyNonvanishingOnFiniteHeightStrip FX defaultCertifiedHeight) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_default_finite_and_glue
+    hId hAnalytic hConv hDelta hNear hBulk hEdge hFinite
+
+theorem riemannHypothesisC2_of_defaultData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultFiniteAndGlueData FX deltaStar) :
+    RiemannHypothesisC2 := by
+  apply riemannHypothesisC2_of_offCriticalStripNonvanishing
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData hId hAnalytic hConv hData
+
+theorem routeK_default_chain_RH
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultFiniteAndGlueData FX deltaStar) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultData hId hAnalytic hConv hData
+
 /-!
-Scaffold for the final Riemann Hypothesis theorem in the C2 architecture.
+Final Riemann-Hypothesis packaging in the C2 architecture.
 
 Primary sources:
 - docs/c2_bulk_offaxis_transfer.md
