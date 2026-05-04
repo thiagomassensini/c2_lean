@@ -1,0 +1,17 @@
+name = "LeanC2"
+version = "0.1.0"
+defaultTargets = ["LeanC2"]
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.29.1"
+
+[[lean_lib]]
+name = "LeanC2"
