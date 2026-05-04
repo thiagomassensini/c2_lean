@@ -19,6 +19,18 @@ theorem defaultEps_pos : 0 < defaultEps := by
 theorem defaultEps_nonneg : 0 ≤ defaultEps := by
   exact le_of_lt defaultEps_pos
 
+theorem constA_pos : 0 < constA := by
+  norm_num [constA]
+
+theorem constA_nonneg : 0 ≤ constA := by
+  exact le_of_lt constA_pos
+
+theorem constC_pos : 0 < constC := by
+  norm_num [constC]
+
+theorem constC_nonneg : 0 ≤ constC := by
+  exact le_of_lt constC_pos
+
 theorem defaultT0_le_defaultCertifiedHeight : defaultT0 ≤ defaultCertifiedHeight := by
   norm_num [defaultT0, defaultCertifiedHeight]
 

@@ -1,6 +1,7 @@
 import Mathlib
 import LeanC2.Finite.DyadicCoverage
 import LeanC2.Glue.GlueTheorem
+import LeanC2.NearAxis.GlobalBound
 import LeanC2.Numerical.Constants
 
 namespace LeanC2
@@ -62,6 +63,15 @@ theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData
   · exact hData.hFinite
   · exact glueTheorem_highOffCriticalStrip_default
       hData.hDelta hData.hNear hData.hBulk hData.hEdge
+
+abbrev DefaultGlobalBoundData (FX : Nat -> Complex -> Complex) : Prop :=
+  DefaultFiniteAndGlueData FX deltaStarLowerModel
+
+theorem cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultGlobalBoundData
+    {FX : Nat -> Complex -> Complex}
+    (hData : DefaultGlobalBoundData FX) :
+    cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX := by
+  exact cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_defaultData hData
 
 /-!
 Reserved module for importing external numerical certificates as explicit assumptions.

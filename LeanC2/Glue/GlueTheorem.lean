@@ -3,6 +3,7 @@ import LeanC2.Bulk.FXNonZeroBulk
 import LeanC2.Edge.FEdgeNonZero
 import LeanC2.Glue.UniformCutoff
 import LeanC2.NearAxis.FXNonZero
+import LeanC2.NearAxis.GlobalBound
 import LeanC2.Numerical.Constants
 
 namespace LeanC2
@@ -28,6 +29,14 @@ theorem glueTheorem_highOffCriticalStrip_default
   · exact hNear
   · exact hBulk
   · exact hEdge
+
+theorem glueTheorem_highOffCriticalStrip_deltaStarLowerModel
+    {FX : Nat -> Complex -> Complex}
+    (hNear : nearRegionEventuallyNonvanishing FX deltaStarLowerModel defaultT0)
+    (hBulk : bulkRegionEventuallyNonvanishing FX deltaStarLowerModel defaultEps defaultT0)
+    (hEdge : edgeRegionEventuallyNonvanishing FX defaultEps defaultT0) :
+    cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip FX defaultT0 := by
+  exact glueTheorem_highOffCriticalStrip_default deltaStarLowerModel_nonneg hNear hBulk hEdge
 
 /-!
 Scaffold for the global gluing theorem.
