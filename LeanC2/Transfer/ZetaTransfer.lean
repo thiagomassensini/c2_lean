@@ -158,11 +158,28 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_c
     hId hApprox.hAnalyticData hApprox.hConv hData
 
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_canonicalCutoffFamily
-    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
-    hId canonicalCutoffFamily_approximationData hData
+    hId (canonicalCutoffFamily_approximationData_of_convergence hConv) hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
+    hId
+    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound hSharp hResidual)
+    hData
 
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -200,13 +217,31 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorDat
 
 theorem
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
-    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
     hId
-    canonicalCutoffFamily_approximationData
+    (canonicalCutoffFamily_approximationData_of_convergence hConv)
+    hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
+    hId
+    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound hSharp hResidual)
     hData
 
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedAnalytic
@@ -247,13 +282,31 @@ theorem
 
 theorem
   riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
-    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
     hIdData
-    canonicalCutoffFamily_approximationData
+    (canonicalCutoffFamily_approximationData_of_convergence hConv)
+    hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedSharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
+    hIdData
+    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound hSharp hResidual)
     hData
 
 theorem
@@ -295,13 +348,31 @@ theorem
 
 theorem
   riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
-    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
     hIdData
-    canonicalCutoffFamily_approximationData
+    (canonicalCutoffFamily_approximationData_of_convergence hConv)
+    hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedSharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
+    hIdData
+    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound hSharp hResidual)
     hData
 
 theorem routeK_default_offaxis_riemannZeta_nonvanishing
@@ -353,11 +424,14 @@ theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_cutoffDat
     hId hApprox hData
 
 theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_canonicalCutoffFamily
-    hId hData
+    hId hConv hData
 
 theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -391,12 +465,16 @@ theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_cu
 
 theorem
     routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
     hId
+    hConv
     hData
 
 theorem routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing
@@ -436,12 +514,16 @@ theorem
 
 theorem
     routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
     hIdData
+    hConv
     hData
 
 theorem
@@ -490,12 +572,16 @@ theorem
 
 theorem
     routeK_default_globalBound_taylor_poleCleared_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    {numFun : Complex -> Complex}
+    (hIdData : PoleClearedRiemannZetaData numFun)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
     hIdData
+    hConv
     hData
 
 /-!

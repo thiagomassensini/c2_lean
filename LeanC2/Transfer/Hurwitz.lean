@@ -53,10 +53,44 @@ theorem offCriticalStripNonvanishing_of_cutoffData
     offCriticalStripNonvanishing numFun :=
   offCriticalStripNonvanishing_of_cutoffAnalyticData hApprox.hAnalyticData hApprox.hConv hFX
 
-theorem canonicalCutoffFamily_approximationData :
-    CutoffApproximationData canonicalCutoffFamily canonicalCutoffLimitFun := by
-  refine ⟨canonicalCutoffFamily_analyticData, ?_⟩
-  exact canonicalCutoffFamily_convergesLocallyUniformlyOnOffCriticalStrip
+theorem canonicalCutoffFamily_approximationData_of_convergence
+    {numFun : Complex -> Complex}
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun) :
+    CutoffApproximationData canonicalCutoffFamily numFun := by
+  refine ⟨canonicalCutoffFamily_analyticData, hConv⟩
+
+theorem canonicalCutoffFamily_approximationData_of_sharpCutoffFamily
+    {numFun : Complex -> Complex}
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual :
+      cutoffResidualVanishesLocallyUniformlyOnOffCriticalStrip canonicalCutoffResidual) :
+    CutoffApproximationData canonicalCutoffFamily numFun := by
+  exact canonicalCutoffFamily_approximationData_of_convergence
+    (canonicalCutoffFamily_convergesLocallyUniformlyOnOffCriticalStrip_of_sharpCutoffFamily
+      hSharp hResidual)
+
+theorem canonicalCutoffFamily_approximationData_of_sharpCutoffFamily_OInv
+    {numFun : Complex -> Complex}
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual :
+      cutoffResidualIsOInvLocallyUniformlyOnOffCriticalStrip canonicalCutoffResidual) :
+    CutoffApproximationData canonicalCutoffFamily numFun := by
+  exact canonicalCutoffFamily_approximationData_of_convergence
+    (canonicalCutoffFamily_convergesLocallyUniformlyOnOffCriticalStrip_of_sharpCutoffFamily_OInv
+      hSharp hResidual)
+
+theorem canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound
+    {numFun : Complex -> Complex}
+    (hSharp :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
+    (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip) :
+    CutoffApproximationData canonicalCutoffFamily numFun := by
+  exact canonicalCutoffFamily_approximationData_of_convergence
+    (canonicalCutoffFamily_converges_of_sharpCutoffFamily_coeffBound
+      hSharp hResidual)
 
 /-- Coordinate form of the Hurwitz step on the off-critical strip. -/
 theorem routeK_hurwitz_nonzero_offaxis
@@ -102,8 +136,8 @@ Primary sources:
 
 This file keeps the genuinely classical Hurwitz step explicit as an axiom-level interface.
 The cutoff-family hypothesis is intentionally eventual in `X`, matching the actual gluing/cutoff
-architecture above. The concrete cutoff family now also has a canonical packaged approximation
-datum, with its convergence imported from the cutoff universality layer.
+architecture above. For the concrete cutoff family, analyticity is packaged canonically,
+while convergence remains an explicit input until the `O(1 / X)` route is fully internalized.
 -/
 
 end LeanC2
