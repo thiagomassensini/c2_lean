@@ -853,16 +853,15 @@ theorem norm_canonicalCutoffResidual_le
   simpa [canonicalCutoffResidual, canonicalCutoffResidualCoeff] using
     norm_cutoffResidualFinite_le X s (cutoffDepth X) (X + 1)
 
-lemma cutoffResidualCoeffLeg_shift_le {s : Complex} (hs : 2 < s.re)
+lemma cutoffResidualCoeffLeg_shift_le {s : Complex} (hs : 1 <= s.re)
     (j m : Nat) (epsilon : BranchSign) :
     (natDescendant (j + 2) epsilon (oddCore m) : Real) *
         ‖legTerm s (j + 2) m epsilon‖ <=
       ‖dyadicComplexWeight (j + 2)‖ *
         ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
   let n := natDescendant (j + 2) epsilon (oddCore m)
-  have hs1 : 1 < s.re := lt_trans one_lt_two hs
-  have hsShift : 1 < (s - 1).re := by
-    have hShift : 1 < s.re - 1 := by linarith
+  have hsShift : 0 <= (s - 1).re := by
+    have hShift : 0 <= s.re - 1 := by linarith
     simpa [Complex.sub_re] using hShift
   have hk : 2 <= j + 2 := by omega
   have hn : 0 < n := by
@@ -870,14 +869,11 @@ lemma cutoffResidualCoeffLeg_shift_le {s : Complex} (hs : 2 < s.re)
     exact natDescendant_oddCore_pos (j + 2) m epsilon hk
   have hNormNeg : ‖(((n : Nat) : Complex) ^ (-s))‖ = (n : Real) ^ (-s.re) := by
     dsimp [n]
-    simpa using
-      (Complex.norm_natCast_cpow_of_re_ne_zero n (s := -s)
-        (Complex.re_neg_ne_zero_of_one_lt_re hs1))
+    simpa using (Complex.norm_natCast_cpow_of_pos hn (-s))
   have hNormShift : ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ = (n : Real) ^ (1 - s.re) := by
     dsimp [n]
     simpa [Complex.sub_re, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
-      (Complex.norm_natCast_cpow_of_re_ne_zero n (s := -(s - 1))
-        (Complex.re_neg_ne_zero_of_one_lt_re hsShift))
+      (Complex.norm_natCast_cpow_of_pos hn (-(s - 1)))
   have hMulNorm : (n : Real) * ‖(((n : Nat) : Complex) ^ (-s))‖ =
       ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ := by
     rw [hNormNeg, hNormShift]
@@ -903,7 +899,7 @@ lemma cutoffResidualCoeffLeg_shift_le {s : Complex} (hs : 2 < s.re)
     _ <= ‖dyadicComplexWeight (j + 2)‖ * ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
           exact mul_le_mul_of_nonneg_left hAntitone (norm_nonneg _)
 
-lemma cutoffResidualCoeffPair_shift_le {s : Complex} (hs : 2 < s.re) (j m : Nat) :
+lemma cutoffResidualCoeffPair_shift_le {s : Complex} (hs : 1 <= s.re) (j m : Nat) :
     (natDescendant (j + 2) BranchSign.minus (oddCore m) : Real) *
         ‖legTerm s (j + 2) m BranchSign.minus‖ +
       (natDescendant (j + 2) BranchSign.plus (oddCore m) : Real) *
@@ -925,8 +921,8 @@ lemma cutoffResidualCoeffPair_shift_le {s : Complex} (hs : 2 < s.re) (j m : Nat)
           rw [norm_mul, Complex.norm_two]
           ring
 
-lemma canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re {s : Complex}
-    (hs : 2 < s.re) (X : Nat) :
+lemma canonicalCutoffResidualCoeff_le_majorant_of_one_le_re {s : Complex}
+    (hs : 1 <= s.re) (X : Nat) :
     canonicalCutoffResidualCoeff s X <=
       ∑ m ∈ Finset.range (X + 1),
         ∑ j ∈ Finset.range (X + 1),
@@ -940,6 +936,15 @@ lemma canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re {s : Complex}
   intro j hj
   simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
     cutoffResidualCoeffPair_shift_le hs j m
+
+lemma canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re {s : Complex}
+    (hs : 2 < s.re) (X : Nat) :
+    canonicalCutoffResidualCoeff s X <=
+      ∑ m ∈ Finset.range (X + 1),
+        ∑ j ∈ Finset.range (X + 1),
+          ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
+            ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
+  exact canonicalCutoffResidualCoeff_le_majorant_of_one_le_re (by linarith) X
 
 theorem canonicalCutoffResidualCoeff_bounded_of_two_lt_re {s : Complex}
     (hs : 2 < s.re) :
@@ -980,28 +985,20 @@ theorem norm_canonicalCutoffResidual_le_const_div_of_two_lt_re {s : Complex}
     (div_le_div_of_nonneg_right (hC X) (le_of_lt (cutoffScale_pos X)))
 
 lemma oddCore_shiftNorm_le_barrier {s : Complex} {σ0 : Real}
-    (hσ0 : 2 < σ0) (hσ : σ0 ≤ s.re) (m : Nat) :
+    (hσ : σ0 ≤ s.re) (m : Nat) :
     ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ <=
   ‖(((oddCore m : Nat) : Complex) ^ (-(((σ0 - 1 : Real) : Complex))))‖ := by
   let n := oddCore m
-  have hsShift : 1 < (s - 1).re := by
-    have hShift : 1 < s.re - 1 := by linarith
-    simpa [Complex.sub_re] using hShift
-  have hσShift : 1 < (((σ0 - 1 : Real) : Complex)).re := by
-    have hShift : 1 < σ0 - 1 := by linarith
-    simpa using hShift
   have hNormS : ‖(((n : Nat) : Complex) ^ (-(s - 1)))‖ = (n : Real) ^ (1 - s.re) := by
     dsimp [n]
     simpa [Complex.sub_re, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
-      (Complex.norm_natCast_cpow_of_re_ne_zero n (s := -(s - 1))
-        (Complex.re_neg_ne_zero_of_one_lt_re hsShift))
+      (Complex.norm_natCast_cpow_of_pos (oddCore_pos m) (-(s - 1)))
   have hNormσ :
       ‖(((n : Nat) : Complex) ^ (-(((σ0 - 1 : Real) : Complex))))‖ = (n : Real) ^ (1 - σ0) := by
     dsimp [n]
     simpa [Complex.ofReal_re, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
-      (Complex.norm_natCast_cpow_of_re_ne_zero n
-        (s := -(((σ0 - 1 : Real) : Complex)))
-        (Complex.re_neg_ne_zero_of_one_lt_re hσShift))
+      (Complex.norm_natCast_cpow_of_pos (oddCore_pos m)
+        (-(((σ0 - 1 : Real) : Complex))))
   have hn1 : 1 <= (n : Real) := by
     exact_mod_cast Nat.succ_le_of_lt (oddCore_pos m)
   have hExp : 1 - s.re <= 1 - σ0 := by
@@ -1036,7 +1033,8 @@ theorem canonicalCutoffResidualCoeff_bounded_of_re_ge {σ0 : Real}
         ∑ m ∈ Finset.range (X + 1),
           ∑ j ∈ Finset.range (X + 1),
             coeff2 j * ‖(((oddCore m : Nat) : Complex) ^ (-(s - 1)))‖ := by
-    simpa [coeff2] using canonicalCutoffResidualCoeff_le_majorant_of_two_lt_re hs X
+    have hs1 : 1 <= s.re := by linarith
+    simpa [coeff2] using canonicalCutoffResidualCoeff_le_majorant_of_one_le_re hs1 X
   refine hCoeffMajorant.trans ?_
   calc
     ∑ m ∈ Finset.range (X + 1),
@@ -1047,7 +1045,7 @@ theorem canonicalCutoffResidualCoeff_bounded_of_re_ge {σ0 : Real}
             intro m hm
             refine Finset.sum_le_sum ?_
             intro j hj
-            exact mul_le_mul_of_nonneg_left (oddCore_shiftNorm_le_barrier hσ0 hσ m)
+            exact mul_le_mul_of_nonneg_left (oddCore_shiftNorm_le_barrier hσ m)
               (hcoeff2Nonneg j)
     _ <= ∑ m ∈ Finset.range (X + 1), ((∑' j : Nat, coeff2 j) * oddBarrierNorm m) := by
           refine Finset.sum_le_sum ?_

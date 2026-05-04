@@ -220,17 +220,14 @@ lemma four_le_two_pow_shift (j : Nat) : 4 <= 2 ^ (j + 2) := by
     _ <= 2 ^ (j + 2) := by
       exact Nat.pow_le_pow_right (by decide : 0 < 2) (by omega)
 
-lemma norm_natCast_cpow_neg_antitone {s : Complex} (hs : 1 < s.re) {a b : Nat}
+lemma norm_natCast_cpow_neg_antitone {s : Complex} (hs : 0 ≤ s.re) {a b : Nat}
     (ha : 0 < a) (hab : a <= b) :
     ‖(((b : Nat) : Complex) ^ (-s))‖ <= ‖(((a : Nat) : Complex) ^ (-s))‖ := by
+  have hb : 0 < b := lt_of_lt_of_le ha hab
   have hbNorm : ‖(((b : Nat) : Complex) ^ (-s))‖ = (b : Real) ^ (-s.re) := by
-    simpa using
-      (Complex.norm_natCast_cpow_of_re_ne_zero b (s := -s)
-        (Complex.re_neg_ne_zero_of_one_lt_re hs))
+    simpa using (Complex.norm_natCast_cpow_of_pos hb (-s))
   have haNorm : ‖(((a : Nat) : Complex) ^ (-s))‖ = (a : Real) ^ (-s.re) := by
-    simpa using
-      (Complex.norm_natCast_cpow_of_re_ne_zero a (s := -s)
-        (Complex.re_neg_ne_zero_of_one_lt_re hs))
+    simpa using (Complex.norm_natCast_cpow_of_pos ha (-s))
   rw [hbNorm, haNorm]
   exact Real.rpow_le_rpow_of_nonpos
     (by exact_mod_cast ha)
@@ -271,7 +268,7 @@ lemma norm_centerTerm_shift_le {s : Complex} (hs : 1 < s.re) (j m : Nat) :
     ‖centerTerm s (j + 2) m‖ <=
       ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
         ‖(((oddCore m : Nat) : Complex) ^ (-s))‖ := by
-  have hcenter := norm_natCast_cpow_neg_antitone hs
+  have hcenter := norm_natCast_cpow_neg_antitone (s := s) (show 0 <= s.re by linarith)
     (oddCore_pos m) (oddCore_le_centerNat_shift j m)
   unfold centerTerm
   rw [norm_mul]
@@ -281,9 +278,9 @@ lemma norm_legPairTerm_shift_le {s : Complex} (hs : 1 < s.re) (j m : Nat) :
     ‖legPairTerm s (j + 2) m‖ <=
       ‖(2 : Complex) * dyadicComplexWeight (j + 2)‖ *
         ‖(((oddCore m : Nat) : Complex) ^ (-s))‖ := by
-  have hminus := norm_natCast_cpow_neg_antitone hs
+  have hminus := norm_natCast_cpow_neg_antitone (s := s) (show 0 <= s.re by linarith)
     (oddCore_pos m) (oddCore_le_natDescendant_shift j m BranchSign.minus)
-  have hplus := norm_natCast_cpow_neg_antitone hs
+  have hplus := norm_natCast_cpow_neg_antitone (s := s) (show 0 <= s.re by linarith)
     (oddCore_pos m) (oddCore_le_natDescendant_shift j m BranchSign.plus)
   unfold legPairTerm legTerm
   calc

@@ -346,4 +346,60 @@ theorem canonicalCutoffFamily_eq_cutoffDominantQuartet_add_tail_add_residual
     _ = cutoffDominantQuartet X s + cutoffDominantTail X s + canonicalCutoffResidual X s := by
       ring
 
+theorem norm_sharpCutoffFamily_ge_criticalLine_seventyHundredths
+    {X : Nat} (hX : 3 ≤ X) (s : Complex) (hcrit : s.re = (1 : ℝ) / 2) :
+    (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ ≤ ‖sharpCutoffFamily X s‖ := by
+  have hmargin :=
+    cutoffDominantQuartet_sub_tail_margin_lower_bound_criticalLine_seventyHundredths X s hcrit
+  have htriangle :
+      ‖cutoffDominantQuartet X s‖ - ‖cutoffDominantTail X s‖ ≤
+        ‖cutoffDominantQuartet X s + cutoffDominantTail X s‖ := by
+    simpa [sub_eq_add_neg, norm_neg] using
+      (norm_sub_norm_le (cutoffDominantQuartet X s) (-cutoffDominantTail X s))
+  calc
+    (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ ≤
+        ‖cutoffDominantQuartet X s‖ - ‖cutoffDominantTail X s‖ := hmargin
+    _ ≤ ‖cutoffDominantQuartet X s + cutoffDominantTail X s‖ := htriangle
+    _ = ‖sharpCutoffFamily X s‖ := by
+          rw [← sharpCutoffFamily_eq_cutoffDominantQuartet_add_tail (X := X) s hX]
+
+theorem sharpCutoffFamily_nonzero_of_criticalLine_cutoffFirstShell_ne_zero
+    {X : Nat} (hX : 3 ≤ X) (s : Complex) (hcrit : s.re = (1 : ℝ) / 2)
+    (hFirst : cutoffFirstShell X s ≠ 0) :
+    sharpCutoffFamily X s ≠ 0 := by
+  apply norm_pos_iff.mp
+  have hlow := norm_sharpCutoffFamily_ge_criticalLine_seventyHundredths hX s hcrit
+  have hfirstNorm : 0 < ‖cutoffFirstShell X s‖ := norm_pos_iff.mpr hFirst
+  have hpos : 0 < (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ := by
+    exact mul_pos (by norm_num) hfirstNorm
+  exact lt_of_lt_of_le hpos hlow
+
+theorem norm_canonicalCutoffFamily_ge_criticalLine_seventyHundredths_sub_residual
+    {X : Nat} (hX : 3 ≤ X) (s : Complex) (hcrit : s.re = (1 : ℝ) / 2) :
+    (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ - ‖canonicalCutoffResidual X s‖ ≤
+      ‖canonicalCutoffFamily X s‖ := by
+  have hsharp := norm_sharpCutoffFamily_ge_criticalLine_seventyHundredths hX s hcrit
+  have htriangle :
+      ‖sharpCutoffFamily X s‖ - ‖canonicalCutoffResidual X s‖ ≤
+        ‖sharpCutoffFamily X s + canonicalCutoffResidual X s‖ := by
+    simpa [sub_eq_add_neg, norm_neg] using
+      (norm_sub_norm_le (sharpCutoffFamily X s) (-canonicalCutoffResidual X s))
+  calc
+    (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ - ‖canonicalCutoffResidual X s‖ ≤
+        ‖sharpCutoffFamily X s‖ - ‖canonicalCutoffResidual X s‖ := by
+          linarith
+    _ ≤ ‖sharpCutoffFamily X s + canonicalCutoffResidual X s‖ := htriangle
+    _ = ‖canonicalCutoffFamily X s‖ := by
+          rw [canonicalCutoffFamily_eq_sharpCutoffFamily_add_residual]
+
+theorem canonicalCutoffFamily_nonzero_of_criticalLine_residual_lt_seventyHundredths
+    {X : Nat} (hX : 3 ≤ X) (s : Complex) (hcrit : s.re = (1 : ℝ) / 2)
+    (hResidual : ‖canonicalCutoffResidual X s‖ < (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖) :
+    canonicalCutoffFamily X s ≠ 0 := by
+  apply norm_pos_iff.mp
+  have hlow := norm_canonicalCutoffFamily_ge_criticalLine_seventyHundredths_sub_residual hX s hcrit
+  have hpos : 0 < (7 / 10 : ℝ) * ‖cutoffFirstShell X s‖ - ‖canonicalCutoffResidual X s‖ := by
+    linarith
+  exact lt_of_lt_of_le hpos hlow
+
 end LeanC2
