@@ -157,6 +157,13 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_c
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffAnalyticData
     hId hApprox.hAnalyticData hApprox.hConv hData
 
+theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
+    hId canonicalCutoffFamily_approximationData hData
+
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -189,6 +196,17 @@ theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorDat
     hId
     hApprox.hAnalyticData
     hApprox.hConv
+    hData
+
+theorem
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
+    hId
+    canonicalCutoffFamily_approximationData
     hData
 
 theorem riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedAnalytic
@@ -228,6 +246,17 @@ theorem
     hData
 
 theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
+    hIdData
+    canonicalCutoffFamily_approximationData
+    hData
+
+theorem
   riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedAnalytic
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hIdData : PoleClearedRiemannZetaData numFun)
@@ -262,6 +291,17 @@ theorem
     hIdData
     hApprox.hAnalyticData
     hApprox.hConv
+    hData
+
+theorem
+  riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
+    hIdData
+    canonicalCutoffFamily_approximationData
     hData
 
 theorem routeK_default_offaxis_riemannZeta_nonvanishing
@@ -312,6 +352,13 @@ theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_cutoffDat
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_cutoffData
     hId hApprox hData
 
+theorem routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_canonicalCutoffFamily
+    hId hData
+
 theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -341,6 +388,16 @@ theorem routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_cu
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
     hId hApprox hData
+
+theorem
+    routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
+    hId
+    hData
 
 theorem routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -376,6 +433,16 @@ theorem
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCutoffData
     hIdData hApprox hData
+
+theorem
+    routeK_default_globalBound_poleCleared_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
+    hIdData
+    hData
 
 theorem
   routeK_default_globalBound_taylor_poleCleared_offaxis_riemannZeta_nonvanishing
@@ -419,6 +486,16 @@ theorem
     hIdData
     hApprox.hAnalyticData
     hApprox.hConv
+    hData
+
+theorem
+    routeK_default_globalBound_taylor_poleCleared_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact
+    riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
+    hIdData
     hData
 
 /-!

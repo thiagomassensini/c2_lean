@@ -1,19 +1,10 @@
 import Mathlib
 import LeanC2.Cutoff.DecayRate
+import LeanC2.Cutoff.Universality
 import LeanC2.Glue.Decomposition
 import LeanC2.Identity.MeromorphicExt
 
 namespace LeanC2
-
-/--
-Local-uniform convergence of a cutoff family to its limiting numerator on the
-off-critical strip.
--/
-def cutoffConvergesLocallyUniformlyOnOffCriticalStrip
-    (FX : Nat -> Complex -> Complex)
-    (numFun : Complex -> Complex) : Prop :=
-  ∀ K : Set Complex, IsCompact K -> K ⊆ offCriticalStripSet ->
-    TendstoUniformlyOn (fun X s => FX X s) numFun Filter.atTop K
 
 /-- Combined cutoff approximation data feeding the Hurwitz step on the off-critical strip. -/
 structure CutoffApproximationData
@@ -62,6 +53,11 @@ theorem offCriticalStripNonvanishing_of_cutoffData
     offCriticalStripNonvanishing numFun :=
   offCriticalStripNonvanishing_of_cutoffAnalyticData hApprox.hAnalyticData hApprox.hConv hFX
 
+theorem canonicalCutoffFamily_approximationData :
+    CutoffApproximationData canonicalCutoffFamily canonicalCutoffLimitFun := by
+  refine ⟨canonicalCutoffFamily_analyticData, ?_⟩
+  exact canonicalCutoffFamily_convergesLocallyUniformlyOnOffCriticalStrip
+
 /-- Coordinate form of the Hurwitz step on the off-critical strip. -/
 theorem routeK_hurwitz_nonzero_offaxis
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -106,7 +102,8 @@ Primary sources:
 
 This file keeps the genuinely classical Hurwitz step explicit as an axiom-level interface.
 The cutoff-family hypothesis is intentionally eventual in `X`, matching the actual gluing/cutoff
-architecture above.
+architecture above. The concrete cutoff family now also has a canonical packaged approximation
+datum, with its convergence imported from the cutoff universality layer.
 -/
 
 end LeanC2

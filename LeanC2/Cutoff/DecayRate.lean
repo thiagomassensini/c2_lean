@@ -27,6 +27,16 @@ theorem cutoffAnalyticOnOffCriticalStrip_of_data
     (hData : CutoffAnalyticData FX) :
     cutoffAnalyticOnOffCriticalStrip FX := hData.hAnalytic
 
+theorem canonicalCutoffFamily_analyticData :
+    CutoffAnalyticData canonicalCutoffFamily := by
+  refine ⟨?_⟩
+  exact canonicalCutoffFamily_analyticOnOffCriticalStrip
+
+theorem canonicalSmoothCutoffFamily_analyticData :
+    CutoffAnalyticData canonicalSmoothCutoffFamily := by
+  refine ⟨?_⟩
+  exact canonicalSmoothCutoffFamily_analyticOnOffCriticalStrip
+
 /-!
 Scaffold for Thm 16: `|R_X| = O(1 / X)`.
 

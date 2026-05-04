@@ -139,6 +139,13 @@ theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_cutoffData
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_cutoffAnalyticData
     hId hApprox.hAnalyticData hApprox.hConv hData
 
+theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_cutoffData
+    hId canonicalCutoffFamily_approximationData hData
+
 theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -168,6 +175,13 @@ theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_cutoffData
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_cutoffAnalyticData
     hId hApprox.hAnalyticData hApprox.hConv hData
+
+theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_cutoffData
+    hId canonicalCutoffFamily_approximationData hData
 
 theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedAnalytic
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -204,6 +218,13 @@ theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCutoffData
     hApprox.hConv
     hData
 
+theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCutoffData
+    hIdData canonicalCutoffFamily_approximationData hData
+
 theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedAnalytic
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hIdData : PoleClearedRiemannZetaData numFun)
@@ -239,6 +260,14 @@ theorem
     hApprox.hAnalyticData
     hApprox.hConv
     hData
+
+theorem
+  riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
+    hIdData canonicalCutoffFamily_approximationData hData
 
 theorem routeK_default_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex} {deltaStar : ℝ -> ℝ}
@@ -285,6 +314,12 @@ theorem routeK_default_globalBound_chain_RH_of_cutoffData
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_cutoffData hId hApprox hData
 
+theorem routeK_default_globalBound_chain_RH_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_canonicalCutoffFamily hId hData
+
 theorem routeK_default_globalBound_taylor_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -311,6 +346,12 @@ theorem routeK_default_globalBound_taylor_chain_RH_of_cutoffData
     (hData : DefaultGlobalBoundTaylorData FX) :
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_cutoffData hId hApprox hData
+
+theorem routeK_default_globalBound_taylor_chain_RH_of_canonicalCutoffFamily
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane canonicalCutoffLimitFun riemannZeta)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily hId hData
 
 theorem routeK_default_globalBound_poleCleared_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -341,6 +382,13 @@ theorem routeK_default_globalBound_poleCleared_chain_RH_of_cutoffData
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCutoffData
     hIdData hApprox hData
+
+theorem routeK_default_globalBound_poleCleared_chain_RH_of_canonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_poleClearedCanonicalCutoffFamily
+    hIdData hData
 
 theorem routeK_default_globalBound_taylor_poleCleared_chain_RH
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
@@ -373,6 +421,15 @@ theorem routeK_default_globalBound_taylor_poleCleared_chain_RH_of_cutoffData
     riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedCutoffData
     hIdData
     hApprox
+    hData
+
+theorem routeK_default_globalBound_taylor_poleCleared_chain_RH_of_canonicalCutoffFamily
+    (hIdData : PoleClearedRiemannZetaData canonicalCutoffLimitFun)
+    (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
+    RiemannHypothesisC2 := by
+  exact
+    riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_poleClearedCanonicalCutoffFamily
+    hIdData
     hData
 
 /-!
