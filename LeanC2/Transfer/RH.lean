@@ -16,6 +16,21 @@ theorem riemannHypothesisC2_of_offCriticalStripNonvanishing
   by_contra hsHalf
   exact hOff s ⟨hs0, hs1, hsHalf⟩ hz
 
+/-- Pointwise critical-line restriction extracted from the packaged C2 form of RH. -/
+theorem riemannZeta_zero_on_criticalLine_of_riemannHypothesisC2
+    (hRH : RiemannHypothesisC2) {s : Complex}
+    (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
+    s.re = (1 : ℝ) / 2 := by
+  exact hRH s hz hs0 hs1
+
+/-- Pointwise critical-line restriction obtained from off-strip nonvanishing. -/
+theorem riemannZeta_zero_on_criticalLine_of_offCriticalStripNonvanishing
+    (hOff : offCriticalStripNonvanishing riemannZeta) {s : Complex}
+    (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
+    s.re = (1 : ℝ) / 2 := by
+  exact riemannZeta_zero_on_criticalLine_of_riemannHypothesisC2
+    (riemannHypothesisC2_of_offCriticalStripNonvanishing hOff) hz hs0 hs1
+
 /-- Final RH packaging from nonvanishing of the continued numerator on the off-critical strip. -/
 theorem riemannHypothesisC2_of_numFunNonvanishing
     {numFun : Complex -> Complex}
@@ -120,6 +135,18 @@ theorem riemannHypothesisC2_of_defaultGlobalBoundData
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData
     hId hAnalytic hConv hData
 
+/-- Pointwise zero restriction along the default global-bound route. -/
+theorem riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundData FX)
+    {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
+    s.re = (1 : ℝ) / 2 := by
+  exact riemannZeta_zero_on_criticalLine_of_riemannHypothesisC2
+    (riemannHypothesisC2_of_defaultGlobalBoundData hId hAnalytic hConv hData) hz hs0 hs1
+
 theorem riemannHypothesisC2_of_defaultGlobalBoundData_of_cutoffAnalyticData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
@@ -173,6 +200,19 @@ theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData
   apply riemannHypothesisC2_of_offCriticalStripNonvanishing
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData
     hId hAnalytic hConv hData
+
+/-- Pointwise zero restriction along the default Taylor global-bound route. -/
+theorem riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundTaylorData
+    {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
+    (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hData : DefaultGlobalBoundTaylorData FX)
+    {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
+    s.re = (1 : ℝ) / 2 := by
+  exact riemannZeta_zero_on_criticalLine_of_riemannHypothesisC2
+    (riemannHypothesisC2_of_defaultGlobalBoundTaylorData hId hAnalytic hConv hData)
+    hz hs0 hs1
 
 theorem riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_cutoffAnalyticData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}

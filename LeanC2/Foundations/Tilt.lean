@@ -182,6 +182,48 @@ theorem tiltBracket_sign_definiteness_nonpos {delta c : Real} (hc : 1 < c) :
   obtain ⟨hpos, hzero, hneg, hm1, hltm1⟩ := tiltBracket_sign_definiteness hc
   exact ⟨hltm1, hm1, hneg, hzero⟩
 
+/-- In the principal regime `δ > -1`, tilt annihilation occurs exactly at `δ = 0`. -/
+theorem tiltBracket_eq_zero_iff_of_neg_one_lt {delta c : Real}
+    (hdelta : -1 < delta) (hc : 1 < c) :
+    tiltBracket delta c = 0 ↔ delta = 0 := by
+  constructor
+  · intro hzero
+    by_cases hneg : delta < 0
+    · have hlt : tiltBracket delta c < 0 :=
+        tiltBracket_neg_of_neg_one_lt hdelta hneg hc
+      linarith
+    · have hnonneg : 0 ≤ delta := le_of_not_gt hneg
+      by_cases hdelta0 : delta = 0
+      · exact hdelta0
+      · have hpos : 0 < delta := lt_of_le_of_ne hnonneg (Ne.symm hdelta0)
+        have hgt : 0 < tiltBracket delta c := tiltBracket_pos_of_pos hpos hc
+        linarith
+  · intro hdelta0
+    simp [hdelta0]
+
+/--
+Along the right-half-plane parametrization `δ = σ - 1/2`, tilt annihilation
+occurs only on `σ = 1/2`.
+-/
+theorem tiltBracket_eq_zero_iff_sigma_half_of_sigma_pos {sigma c : Real}
+    (hsigma : 0 < sigma) (hc : 1 < c) :
+    tiltBracket (sigma - (1 : Real) / 2) c = 0 ↔ sigma = (1 : Real) / 2 := by
+  have hdelta : -1 < sigma - (1 : Real) / 2 := by
+    linarith
+  constructor
+  · intro hzero
+    have hdelta0 := (tiltBracket_eq_zero_iff_of_neg_one_lt hdelta hc).1 hzero
+    linarith
+  · intro hsigma_half
+    simp [hsigma_half]
+
+/-- Off the critical line, the tilt bracket is nonzero throughout the open right half-plane. -/
+theorem tiltBracket_ne_zero_of_sigma_pos_of_ne_half {sigma c : Real}
+    (hsigma : 0 < sigma) (hc : 1 < c) (hhalf : sigma ≠ (1 : Real) / 2) :
+    tiltBracket (sigma - (1 : Real) / 2) c ≠ 0 := by
+  intro hzero
+  exact hhalf ((tiltBracket_eq_zero_iff_sigma_half_of_sigma_pos hsigma hc).1 hzero)
+
 theorem routeK_thm2_tilt_annihilation (c : Real) :
     tiltBracket 0 c = 0 := by
   exact tiltBracket_zero c

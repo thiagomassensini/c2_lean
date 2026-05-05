@@ -11,6 +11,7 @@ import LeanC2.Operators.BranchToGenuine
 
 import LeanC2.Identity.C0
 import LeanC2.Identity.C0NonZero
+import LeanC2.Identity.C0LogDerivative
 import LeanC2.Identity.FundamentalIdentity
 import LeanC2.Identity.MeromorphicExt
 
@@ -19,6 +20,7 @@ import LeanC2.Cutoff.DominantQuartet
 import LeanC2.Cutoff.DecayRate
 import LeanC2.Cutoff.Universality
 import LeanC2.Cutoff.Cancellation
+import LeanC2.CriticalLine.Nonvanishing
 
 import LeanC2.NearAxis.Transversality
 import LeanC2.NearAxis.Amplification
@@ -50,3 +52,4 @@ import LeanC2.Transfer.RH
 
 import LeanC2.Numerical.Constants
 import LeanC2.Numerical.Verification
+import LeanC2.PublicAPI

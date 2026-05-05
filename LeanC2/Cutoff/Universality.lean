@@ -172,6 +172,54 @@ theorem canonicalCutoffFamily_converges_of_sharpCutoffFamily_coeffBound
     hSharp
     (canonicalCutoffResidualVanishesLocallyUniformlyOnOffCriticalStrip_of_coeffBound hResidual)
 
+/-- The scalar cutoff model rate `C / (X + 1)` is eventually smaller than any positive target. -/
+theorem eventually_abs_cutoffRate_lt (C : Real) {ε : Real} (hε : 0 < ε) :
+    ∃ X0 : Nat, ∀ X : Nat, X0 ≤ X -> |C / cutoffScale X| < ε := by
+  by_cases hC : C = 0
+  · refine ⟨0, ?_⟩
+    intro X hX
+    simp [hC, hε]
+  · have hCpos : 0 < |C| := abs_pos.mpr hC
+    obtain ⟨N, hN⟩ : ∃ N : Nat, 1 / cutoffScale N < ε / |C| := by
+      simpa [cutoffScale] using (exists_nat_one_div_lt (K := ℝ) (div_pos hε hCpos))
+    refine ⟨N, ?_⟩
+    intro X hX
+    have hScale : cutoffScale N ≤ cutoffScale X := by
+      unfold cutoffScale
+      exact_mod_cast Nat.succ_le_succ hX
+    have hInv : 1 / cutoffScale X ≤ 1 / cutoffScale N := by
+      exact one_div_le_one_div_of_le (cutoffScale_pos N) hScale
+    have hScaled : |C| / cutoffScale X ≤ |C| / cutoffScale N := by
+      simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using
+        (mul_le_mul_of_nonneg_left hInv (abs_nonneg C))
+    have hMul : |C| * (cutoffScale N)⁻¹ < |C| * (ε / |C|) := by
+      simpa [one_div, div_eq_mul_inv, cutoffScale, mul_comm, mul_left_comm, mul_assoc] using
+        (mul_lt_mul_of_pos_left hN hCpos)
+    have hCN : |C| / cutoffScale N < ε := by
+      rw [div_eq_mul_inv]
+      calc
+        |C| * (cutoffScale N)⁻¹ < |C| * (ε / |C|) := hMul
+        _ = ε := by field_simp [hCpos.ne']
+    calc
+      |C / cutoffScale X| = |C| / cutoffScale X := by
+        rw [abs_div]
+        simp [abs_of_pos (cutoffScale_pos X)]
+      _ ≤ |C| / cutoffScale N := hScaled
+      _ < ε := hCN
+
+/-- Any scalar error bounded by `C / (X + 1)` is eventually smaller than any positive target. -/
+theorem eventually_lt_of_cutoffRate_bound {e : Nat -> Real} {C : Real}
+    (hC : 0 ≤ C) (hBound : ∀ X : Nat, e X ≤ C / cutoffScale X)
+    {ε : Real} (hε : 0 < ε) :
+    ∃ X0 : Nat, ∀ X : Nat, X0 ≤ X -> e X < ε := by
+  rcases eventually_abs_cutoffRate_lt C hε with ⟨X0, hX0⟩
+  refine ⟨X0, ?_⟩
+  intro X hX
+  have hRateNonneg : 0 ≤ C / cutoffScale X :=
+    div_nonneg hC (le_of_lt (cutoffScale_pos X))
+  have hAbsEq : |C / cutoffScale X| = C / cutoffScale X := abs_of_nonneg hRateNonneg
+  exact lt_of_le_of_lt (hBound X) (by simpa [hAbsEq] using hX0 X hX)
+
 /-!
 Scaffold for the cutoff universality layer (Thm 3).
 
