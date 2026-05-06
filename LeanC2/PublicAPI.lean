@@ -3,6 +3,7 @@ import LeanC2.Identity.C0NonZero
 import LeanC2.Identity.FundamentalIdentity
 import LeanC2.Identity.MeromorphicExt
 import LeanC2.NearAxis.TaylorRadius
+import LeanC2.Numerical.Generated.DefaultGlobalBoundScaffold
 import LeanC2.Transfer.Hurwitz
 import LeanC2.Transfer.ZetaTransfer
 import LeanC2.Transfer.RH
@@ -299,6 +300,52 @@ theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundTa
   exact riemannZeta_zero_on_criticalLine_of_riemannHypothesis
     (canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundTaylorData hId hConv hData)
     hz hs0 hs1
+
+/-- Public exported generated default global-bound package for the canonical cutoff family. -/
+theorem canonicalCutoff_generatedDefaultGlobalBoundData :
+    DefaultGlobalBoundData canonicalCutoffFamily := by
+  exact canonicalDefaultGlobalBoundData_of_generatedCertificates
+
+/-- Public exported generated Taylor package for the canonical cutoff family. -/
+theorem canonicalCutoff_generatedDefaultGlobalBoundTaylorData :
+    DefaultGlobalBoundTaylorData canonicalCutoffFamily := by
+  exact canonicalDefaultGlobalBoundTaylorData_of_generatedCertificates
+
+/-- Public exported off-strip nonvanishing of the canonical cutoff family from generated data. -/
+theorem canonicalCutoff_eventuallyNonvanishingOnOffCriticalStrip_of_generatedCertificates :
+    cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip canonicalCutoffFamily := by
+  exact canonicalCutoffFamilyEventuallyNonvanishingOnOffCriticalStrip_of_generatedCertificates
+
+/-- Canonical-cutoff off-strip nonvanishing of `riemannZeta` from generated default data. -/
+theorem canonicalCutoff_riemannZeta_nonvanishing_of_generatedDefaultGlobalBoundData
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun) :
+    offCriticalStripNonvanishing riemannZeta := by
+  exact canonicalCutoff_riemannZeta_nonvanishing_of_defaultGlobalBoundData
+    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData
+
+/-- Canonical-cutoff RH package from generated default global-bound data. -/
+theorem canonicalCutoff_riemannHypothesis_of_generatedDefaultGlobalBoundData
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun) :
+    RiemannHypothesisC2 := by
+  exact canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundData
+    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData
+
+/-- Pointwise critical-line restriction from generated default global-bound data. -/
+theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_generatedDefaultGlobalBoundData
+    {numFun : Complex -> Complex}
+    (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
+    (hConv :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
+    s.re = (1 : ℝ) / 2 := by
+  exact canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundData
+    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData hz hs0 hs1
 
 /-!
 Stable public aliases for the main coordinate-level interfaces used in the off-axis chain.

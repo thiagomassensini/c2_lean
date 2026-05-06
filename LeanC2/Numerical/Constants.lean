@@ -3,7 +3,7 @@ import Mathlib
 namespace LeanC2
 
 noncomputable def constA : Real := 7931 / 5000
-noncomputable def constC : Real := 169 / 1000
+noncomputable def constC : Real := 17 / 100
 noncomputable def constK1 : Real := 2877 / 50
 noncomputable def constK2 : Real := 381 / 5
 noncomputable def constCT : Real := 531 / 4

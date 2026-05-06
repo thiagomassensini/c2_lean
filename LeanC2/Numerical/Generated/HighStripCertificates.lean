@@ -1,0 +1,16 @@
+import LeanC2.Numerical.Generated.BulkCertificate
+import LeanC2.Numerical.Generated.EdgeCertificate
+import LeanC2.Numerical.Generated.GlobalBoundCertificate
+
+set_option linter.style.whitespace false
+
+namespace LeanC2
+
+theorem canonicalHighOffCriticalStripEventuallyNonvanishing_of_generatedCertificates :
+    cutoffFamilyEventuallyNonvanishingOnHighOffCriticalStrip canonicalCutoffFamily defaultT0 := by
+  exact canonicalHighOffCriticalStripEventuallyNonvanishing_of_components
+    certifiedCanonicalNearAxisGlobalBoundTaylorCertificate
+    certifiedCanonicalBulkGlobalBoundCertificate
+    certifiedCanonicalEdgeGlobalBoundCertificate
+
+end LeanC2
