@@ -2,6 +2,8 @@ import Mathlib
 import LeanC2.Finite.FiniteCertificate
 import LeanC2.Transfer.ZetaTransfer
 
+set_option linter.style.longLine false
+
 namespace LeanC2
 
 /-- C2-form statement of RH: every zero in the open critical strip lies on the critical line. -/

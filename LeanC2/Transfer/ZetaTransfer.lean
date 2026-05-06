@@ -5,6 +5,8 @@ import LeanC2.Identity.MeromorphicExt
 import LeanC2.Numerical.Constants
 import LeanC2.Transfer.Hurwitz
 
+set_option linter.style.longLine false
+
 namespace LeanC2
 
 /-- Direct pointwise transfer from continued numerator nonvanishing to zeta nonvanishing. -/
