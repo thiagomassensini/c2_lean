@@ -1,6 +1,8 @@
 # LeanC2
 
-Scaffold inicial do projeto Lean 4 + Mathlib para a cadeia C2 -> RH.
+Lean 4 + Mathlib formalization of the C2 framework, focused on the off-axis
+chain, the continuation interface, numerical-certificate hooks, and the public
+endpoints connected to the C2 -> RH package.
 
 ## Build
 
@@ -9,8 +11,21 @@ lake exe cache get
 lake build
 ```
 
-## Referencias rapidas
+## Quick Structure
 
-- Arquitetura: `c2_lean_architecture.md`
-- Reaproveitamento do legado: `legacy_reuse_map.md`
-- Codigo antigo preservado: `Antigo_Lean_C2/`
+- `LeanC2/` contains the main formalization graph.
+- `LeanC2/PublicAPI.lean` exposes the public surface of the project.
+- `LeanC2/Numerical/Generated/` contains Lean artifacts generated from the
+  external certificates used by the canonical verification flow.
+
+## References
+
+- Architecture: `c2_lean_architecture.md`
+- Legacy reuse map: `legacy_reuse_map.md`
+- Preserved legacy code: `Antigo_Lean_C2/`
+
+## Citation
+
+Citation and release metadata are provided in `CITATION.cff`, `.zenodo.json`,
+and `ZENODO_RELEASE_2026-05-06.1.md`.
+

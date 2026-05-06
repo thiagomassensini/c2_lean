@@ -1,6 +1,7 @@
 {
   "title": "LeanC2: Lean 4 formalization for the C2 -> RH chain",
   "upload_type": "software",
+  "version": "zenodo-2026-05-06.1",
   "publication_date": "2026-05-06",
   "description": "Lean 4 and Mathlib formalization work for the C2 framework, including operator, identity, transfer, off-axis verification, generated numerical certificate hooks, and public API endpoints connected to the C2 -> RH chain.",
   "creators": [
