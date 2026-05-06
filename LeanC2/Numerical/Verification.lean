@@ -79,10 +79,11 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripVerificationData) :
     offCriticalStripNonvanishing riemannZeta := by
   exact routeK_default_globalBound_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    hId hConv hData
+    hId hConv hNontrivial hData
 
 theorem
   canonicalOffStrip_riemannZeta_nonvanishing_of_defaultTheoreticalVerificationData
@@ -90,13 +91,15 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTheoreticalVerificationData) :
     offCriticalStripNonvanishing riemannZeta := by
-  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv
+  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv hNontrivial
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultData
     hId
     (cutoffAnalyticOnOffCriticalStrip_of_data hApprox.hAnalyticData)
     hApprox.hConv
+    hApprox.hNontrivial
     hData
 
 theorem
@@ -105,11 +108,12 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTaylorVerificationData) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     routeK_default_globalBound_taylor_offaxis_riemannZeta_nonvanishing_of_canonicalCutoffFamily
-    hId hConv hData
+    hId hConv hNontrivial hData
 
 theorem
   canonicalOffStrip_riemannZeta_nonvanishing_of_defaultTheoreticalTaylorVerificationData
@@ -117,13 +121,15 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTheoreticalTaylorVerificationData) :
     offCriticalStripNonvanishing riemannZeta := by
-  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv
+  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv hNontrivial
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultTaylorData
     hId
     (cutoffAnalyticOnOffCriticalStrip_of_data hApprox.hAnalyticData)
     hApprox.hConv
+    hApprox.hNontrivial
     hData
 
 theorem riemannHypothesisC2_of_defaultOffStripVerificationData
@@ -131,22 +137,26 @@ theorem riemannHypothesisC2_of_defaultOffStripVerificationData
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripVerificationData) :
     RiemannHypothesisC2 := by
-  exact routeK_default_globalBound_chain_RH_of_canonicalCutoffFamily hId hConv hData
+  exact routeK_default_globalBound_chain_RH_of_canonicalCutoffFamily
+    hId hConv hNontrivial hData
 
 theorem riemannHypothesisC2_of_defaultOffStripTheoreticalVerificationData
     {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTheoreticalVerificationData) :
     RiemannHypothesisC2 := by
-  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv
+  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv hNontrivial
   exact riemannHypothesisC2_of_defaultData
     hId
     (cutoffAnalyticOnOffCriticalStrip_of_data hApprox.hAnalyticData)
     hApprox.hConv
+    hApprox.hNontrivial
     hData
 
 theorem
@@ -155,22 +165,26 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTaylorVerificationData) :
     RiemannHypothesisC2 := by
-  exact routeK_default_globalBound_taylor_chain_RH_of_canonicalCutoffFamily hId hConv hData
+  exact routeK_default_globalBound_taylor_chain_RH_of_canonicalCutoffFamily
+    hId hConv hNontrivial hData
 
 theorem riemannHypothesisC2_of_defaultOffStripTheoreticalTaylorVerificationData
     {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultCanonicalOffStripTheoreticalTaylorVerificationData) :
     RiemannHypothesisC2 := by
-  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv
+  have hApprox := canonicalCutoffFamily_approximationData_of_convergence hConv hNontrivial
   exact riemannHypothesisC2_of_defaultTaylorData
     hId
     (cutoffAnalyticOnOffCriticalStrip_of_data hApprox.hAnalyticData)
     hApprox.hConv
+    hApprox.hNontrivial
     hData
 
 /-!

@@ -8,17 +8,17 @@ namespace LeanC2
 
 def bulkCertificateJsonPath : String := "/home/thlinux/C2_Hipotese_De_Riemann/artefacts/json/bulk_certificate.json"
 
-def bulkCertificateJsonSha256 : String := "20fc2cb64d8321e59b7363b39ed82ef91004b57944e9d9c0c3b6d53874ec73fb"
+def bulkCertificateJsonSha256 : String := "6a0a2ae24f4b6846497c3dba853d06df2b5ac5784f72be5c1a63271763b8f104"
 
-def bulkCertificateCommand : String := "python3 /home/thlinux/C2_Hipotese_De_Riemann/scripts/cert_regional_offaxis.py --kind bulk --output /home/thlinux/C2_Hipotese_De_Riemann/artefacts/json/bulk_certificate.json --primary-doc /home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_glue.md --supporting-doc /home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_route3_tilt.md --primary-script /home/thlinux/C2_Hipotese_De_Riemann/scripts/c2_bulk_offaxis_certificate.py --default-t0 100 --default-eps-num 1 --default-eps-den 20 --supporting-script /home/thlinux/C2_Hipotese_De_Riemann/scripts/c2_rouche_rectangle.py --emit-lean --lean-output /home/thlinux/C2_Hipotese_De_Riemann/Lean/LeanC2/Numerical/Generated/BulkCertificate.lean"
+def bulkCertificateCommand : String := "python3 /home/thlinux/C2_Hipotese_De_Riemann/scripts/cert_regional_offaxis.py --kind bulk --output /home/thlinux/C2_Hipotese_De_Riemann/artefacts/json/bulk_certificate.json --primary-doc /home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_route3_tilt.md --supporting-doc /home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_glue.md --primary-script /home/thlinux/C2_Hipotese_De_Riemann/scripts/c2_bulk_offaxis_certificate.py --default-t0 100 --default-eps-num 1 --default-eps-den 20 --supporting-script /home/thlinux/C2_Hipotese_De_Riemann/scripts/c2_rouche_rectangle.py --emit-lean --lean-output /home/thlinux/C2_Hipotese_De_Riemann/Lean/LeanC2/Numerical/Generated/BulkCertificate.lean"
 
-def bulkCertificatePrimaryDoc : String := "/home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_glue.md"
+def bulkCertificatePrimaryDoc : String := "/home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_route3_tilt.md"
 
-def bulkCertificatePrimaryDocSha256 : String := "1b26bb9aa6c2b415ee94f9dca33ce79ccd7441a10c4a25fc2944419601b6ec45"
+def bulkCertificatePrimaryDocSha256 : String := "483bd8c3078ed3bf4f4fa174582b23f62c71f3021044762e0816e54303743dee"
 
-def bulkCertificateSupportingDoc : String := "/home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_route3_tilt.md"
+def bulkCertificateSupportingDoc : String := "/home/thlinux/C2_Hipotese_De_Riemann/docs/c2_bulk_offaxis_glue.md"
 
-def bulkCertificateSupportingDocSha256 : String := "483bd8c3078ed3bf4f4fa174582b23f62c71f3021044762e0816e54303743dee"
+def bulkCertificateSupportingDocSha256 : String := "1b26bb9aa6c2b415ee94f9dca33ce79ccd7441a10c4a25fc2944419601b6ec45"
 
 def bulkCertificatePrimaryScript : String := "/home/thlinux/C2_Hipotese_De_Riemann/scripts/c2_bulk_offaxis_certificate.py"
 
@@ -50,6 +50,10 @@ Audit trail:
 - primary script: `bulkCertificatePrimaryScript`
 - supporting script: `bulkCertificateSupportingScript`
 - delta model: `deltaStarLowerModel`
+
+Logical route:
+- Route 3 (`docs/c2_bulk_offaxis_route3_tilt.md`) is the primary analytic bulk route.
+- Route 1 numerical scans and Route 2 Rouche checks are support/audit material, not Lean kernel dependencies.
 - default threshold: `t >= 100`, `eps = 1/20`
 
 This certificate supplies one regional leg of the canonical high off-strip package.

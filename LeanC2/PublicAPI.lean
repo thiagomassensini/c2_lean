@@ -136,23 +136,26 @@ theorem continuedNumerator_nonzero_on_offCriticalStripCoordinate_of_hurwitz
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hAnalytic : cutoffAnalyticOnOffCriticalStrip FX)
     (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hFX : cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX)
     {sigma t : Real} (hsigma0 : 0 < sigma) (hsigma1 : sigma < 1)
     (hhalf : sigma ≠ (1 : ℝ) / 2) :
     numFun ((sigma : Complex) + t * Complex.I) ≠ 0 := by
-  exact routeK_hurwitz_nonzero_offaxis hAnalytic hConv hFX hsigma0 hsigma1 hhalf
+  exact routeK_hurwitz_nonzero_offaxis
+    hAnalytic hConv hNontrivial hFX hsigma0 hsigma1 hhalf
 
 /-- Coordinate Hurwitz nonvanishing with analyticity supplied by cutoff data. -/
 theorem continuedNumerator_nonzero_on_offCriticalStripCoordinate_of_cutoffAnalyticData
     {FX : Nat -> Complex -> Complex} {numFun : Complex -> Complex}
     (hAnalyticData : CutoffAnalyticData FX)
     (hConv : cutoffConvergesLocallyUniformlyOnOffCriticalStrip FX numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hFX : cutoffFamilyEventuallyNonvanishingOnOffCriticalStrip FX)
     {sigma t : Real} (hsigma0 : 0 < sigma) (hsigma1 : sigma < 1)
     (hhalf : sigma ≠ (1 : ℝ) / 2) :
     numFun ((sigma : Complex) + t * Complex.I) ≠ 0 := by
   exact routeK_hurwitz_nonzero_offaxis_of_cutoffAnalyticData
-    hAnalyticData hConv hFX hsigma0 hsigma1 hhalf
+    hAnalyticData hConv hNontrivial hFX hsigma0 hsigma1 hhalf
 
 /-- Coordinate Hurwitz nonvanishing with the bundled cutoff approximation package. -/
 theorem continuedNumerator_nonzero_on_offCriticalStripCoordinate_of_cutoffData
@@ -171,11 +174,12 @@ theorem canonicalCutoff_riemannZeta_nonvanishing_of_defaultGlobalBoundData
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_canonicalCutoffFamily
-      hId hConv hData
+      hId hConv hNontrivial hData
 
 /--
 Canonical-cutoff off-strip nonvanishing of `riemannZeta` from default Taylor global-bound data.
@@ -186,11 +190,12 @@ theorem
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
     hId
-    (canonicalCutoffFamily_approximationData_of_convergence hConv)
+    (canonicalCutoffFamily_approximationData_of_convergence hConv hNontrivial)
     hData
 
 /--
@@ -202,11 +207,12 @@ theorem sharpCutoffCoeffBound_riemannZeta_nonvanishing_of_defaultGlobalBoundData
     (hSharp :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
     (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact
     riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData_of_sharpCutoff_coeffBound
-      hId hSharp hResidual hData
+      hId hSharp hResidual hNontrivial hData
 
 /--
 Sharp-cutoff coefficient-bound route to off-strip nonvanishing of `riemannZeta` at Taylor level.
@@ -218,11 +224,13 @@ theorem
     (hSharp :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
     (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     offCriticalStripNonvanishing riemannZeta := by
   exact riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundTaylorData_of_cutoffData
     hId
-    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound hSharp hResidual)
+    (canonicalCutoffFamily_approximationData_of_sharpCutoff_coeffBound
+      hSharp hResidual hNontrivial)
     hData
 
 /-- Canonical-cutoff RH package from default global-bound data. -/
@@ -231,9 +239,11 @@ theorem canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundData
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     RiemannHypothesisC2 := by
-  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_canonicalCutoffFamily hId hConv hData
+  exact riemannHypothesisC2_of_defaultGlobalBoundData_of_canonicalCutoffFamily
+    hId hConv hNontrivial hData
 
 /-- Canonical-cutoff RH package from default Taylor global-bound data. -/
 theorem canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundTaylorData
@@ -241,9 +251,11 @@ theorem canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundTaylorData
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     RiemannHypothesisC2 := by
-  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily hId hConv hData
+  exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_canonicalCutoffFamily
+    hId hConv hNontrivial hData
 
 /-- Sharp-cutoff coefficient-bound RH package from default global-bound data. -/
 theorem sharpCutoffCoeffBound_riemannHypothesis_of_defaultGlobalBoundData
@@ -252,10 +264,11 @@ theorem sharpCutoffCoeffBound_riemannHypothesis_of_defaultGlobalBoundData
     (hSharp :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
     (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily) :
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundData_of_sharpCutoff_coeffBound
-    hId hSharp hResidual hData
+    hId hSharp hResidual hNontrivial hData
 
 /-- Sharp-cutoff coefficient-bound RH package from default Taylor global-bound data. -/
 theorem sharpCutoffCoeffBound_riemannHypothesis_of_defaultGlobalBoundTaylorData
@@ -264,10 +277,11 @@ theorem sharpCutoffCoeffBound_riemannHypothesis_of_defaultGlobalBoundTaylorData
     (hSharp :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip sharpCutoffFamily numFun)
     (hResidual : canonicalCutoffResidualCoeffUniformlyBoundedOnOffCriticalStrip)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily) :
     RiemannHypothesisC2 := by
   exact riemannHypothesisC2_of_defaultGlobalBoundTaylorData_of_sharpCutoff_coeffBound
-    hId hSharp hResidual hData
+    hId hSharp hResidual hNontrivial hData
 
 /-- Public pointwise form of the RH package: zeros in the strip lie on the critical line. -/
 theorem riemannZeta_zero_on_criticalLine_of_riemannHypothesis
@@ -282,11 +296,13 @@ theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundDa
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundData canonicalCutoffFamily)
     {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
     s.re = (1 : ℝ) / 2 := by
   exact riemannZeta_zero_on_criticalLine_of_riemannHypothesis
-    (canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundData hId hConv hData) hz hs0 hs1
+    (canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundData
+      hId hConv hNontrivial hData) hz hs0 hs1
 
 /-- Canonical-cutoff pointwise critical-line restriction from default Taylor global-bound data. -/
 theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundTaylorData
@@ -294,11 +310,13 @@ theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundTa
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     (hData : DefaultGlobalBoundTaylorData canonicalCutoffFamily)
     {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
     s.re = (1 : ℝ) / 2 := by
   exact riemannZeta_zero_on_criticalLine_of_riemannHypothesis
-    (canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundTaylorData hId hConv hData)
+    (canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundTaylorData
+      hId hConv hNontrivial hData)
     hz hs0 hs1
 
 /-- Public exported generated default global-bound package for the canonical cutoff family. -/
@@ -321,20 +339,22 @@ theorem canonicalCutoff_riemannZeta_nonvanishing_of_generatedDefaultGlobalBoundD
     {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
-      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun) :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun) :
     offCriticalStripNonvanishing riemannZeta := by
   exact canonicalCutoff_riemannZeta_nonvanishing_of_defaultGlobalBoundData
-    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData
+    hId hConv hNontrivial canonicalCutoff_generatedDefaultGlobalBoundData
 
 /-- Canonical-cutoff RH package from generated default global-bound data. -/
 theorem canonicalCutoff_riemannHypothesis_of_generatedDefaultGlobalBoundData
     {numFun : Complex -> Complex}
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
-      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun) :
+      cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun) :
     RiemannHypothesisC2 := by
   exact canonicalCutoff_riemannHypothesis_of_defaultGlobalBoundData
-    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData
+    hId hConv hNontrivial canonicalCutoff_generatedDefaultGlobalBoundData
 
 /-- Pointwise critical-line restriction from generated default global-bound data. -/
 theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_generatedDefaultGlobalBoundData
@@ -342,10 +362,11 @@ theorem canonicalCutoff_riemannZeta_zero_on_criticalLine_of_generatedDefaultGlob
     (hId : fundamentalIdentityOnPuncturedRightHalfPlane numFun riemannZeta)
     (hConv :
       cutoffConvergesLocallyUniformlyOnOffCriticalStrip canonicalCutoffFamily numFun)
+    (hNontrivial : cutoffLimitNontrivialOnOffCriticalStrip numFun)
     {s : Complex} (hz : riemannZeta s = 0) (hs0 : 0 < s.re) (hs1 : s.re < 1) :
     s.re = (1 : ℝ) / 2 := by
   exact canonicalCutoff_riemannZeta_zero_on_criticalLine_of_defaultGlobalBoundData
-    hId hConv canonicalCutoff_generatedDefaultGlobalBoundData hz hs0 hs1
+    hId hConv hNontrivial canonicalCutoff_generatedDefaultGlobalBoundData hz hs0 hs1
 
 /-!
 Stable public aliases for the main coordinate-level interfaces used in the off-axis chain.
