@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this Lean formalization, please cite it using the metadata below."
+title: "LeanC2: Lean 4 formalization for the C2 -> RH chain"
+type: software
+version: "zenodo-2026-05-06"
+date-released: "2026-05-06"
+repository-code: "https://github.com/thiagomassensini/c2_lean"
+url: "https://github.com/thiagomassensini/c2_lean"
+abstract: >-
+  Lean 4 and Mathlib formalization work for the C2 framework, including operator,
+  identity, transfer, off-axis verification, generated numerical certificate hooks,
+  and public API endpoints connected to the C2 -> RH chain.
+keywords:
+  - Lean 4
+  - Mathlib
+  - formal mathematics
+  - Riemann zeta function
+  - C2 framework
+authors:
+  - family-names: "Motta"
+    given-names: "Thiago F."
+    affiliation: "Independent Research"
+    orcid: "https://orcid.org/0009-0002-3415-9805"
