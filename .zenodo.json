@@ -1,9 +1,9 @@
 {
-  "title": "LeanC2: Lean 4 formalization for the C2 -> RH chain",
+  "title": "LeanC2: Lean 4 formalization of the C2 analytic framework",
   "upload_type": "software",
-  "version": "zenodo-2026-05-06.1",
-  "publication_date": "2026-05-06",
-  "description": "Lean 4 and Mathlib formalization work for the C2 framework, including operator, identity, transfer, off-axis verification, generated numerical certificate hooks, and public API endpoints connected to the C2 -> RH chain.",
+  "version": "zenodo-2026-05-07",
+  "publication_date": "2026-05-07",
+  "description": "Lean 4 and Mathlib 4 formalization of the C2 analytic number theory framework. Covers operator algebra (branch, genuine, cutoff), meromorphic continuation and identity layers, near-axis transversality and Taylor radius, bulk and edge nonvanishing certificates, glue decomposition geometry, finite height coverage, and the analytic transfer chain to the zeta function.",
   "creators": [
     {
       "name": "Motta, Thiago F.",

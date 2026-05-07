@@ -1,15 +1,17 @@
 cff-version: 1.2.0
 message: "If you use this Lean formalization, please cite it using the metadata below."
-title: "LeanC2: Lean 4 formalization for the C2 -> RH chain"
+title: "LeanC2: Lean 4 formalization of the C2 analytic framework"
 type: software
 version: "zenodo-2026-05-07"
 date-released: "2026-05-07"
 repository-code: "https://github.com/thiagomassensini/c2_lean"
 url: "https://github.com/thiagomassensini/c2_lean"
 abstract: >-
-  Lean 4 and Mathlib formalization work for the C2 framework, including operator,
-  identity, transfer, off-axis verification, generated numerical certificate hooks,
-  and public API endpoints connected to the C2 -> RH chain.
+  Lean 4 and Mathlib 4 formalization of the C2 analytic number theory framework.
+  Covers operator algebra (branch, genuine, cutoff), meromorphic continuation
+  and identity layers, near-axis transversality and Taylor radius, bulk and edge
+  nonvanishing certificates, glue decomposition geometry, finite height coverage,
+  and the analytic transfer chain to the zeta function.
 keywords:
   - Lean 4
   - Mathlib
