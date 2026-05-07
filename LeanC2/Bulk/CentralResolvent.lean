@@ -398,4 +398,148 @@ theorem FInfinity_eq_firstShellCoeff_mul_resolvent_shellCoordinates_mul_oddZeta
   exact FInfinity_eq_firstShellCoeff_mul_resolvent_mul_oddZeta hs
     (shellRatio_eq_radialPhase_exp s)
 
+/-! ### Section 7 — Exact power identities for `bulkCriticalRadius` -/
+
+/-- `r = 2^(-3/2)` satisfies `r^2 = 1/8` exactly. -/
+theorem bulkCriticalRadius_sq : bulkCriticalRadius ^ 2 = (1 : Real) / 8 := by
+  have key : bulkCriticalRadius ^ 2 = (2 : Real) ^ (-3 : Real) := by
+    rw [bulkCriticalRadius_eq_two_rpow_neg_three_halves,
+        ← Real.rpow_natCast, ← Real.rpow_mul (by norm_num : (0 : Real) ≤ 2)]
+    congr 1
+    norm_num
+  rw [key, Real.rpow_neg (by norm_num : (0 : Real) ≤ 2),
+      show (3 : Real) = ((3 : ℕ) : Real) from by norm_cast, Real.rpow_natCast]
+  norm_num
+
+/-- `r = 2^(-3/2)` satisfies `r^4 = 1/64` exactly. -/
+theorem bulkCriticalRadius_pow_four : bulkCriticalRadius ^ 4 = (1 : Real) / 64 := by
+  have : bulkCriticalRadius ^ 4 = (bulkCriticalRadius ^ 2) ^ 2 := by ring
+  rw [this, bulkCriticalRadius_sq]
+  norm_num
+
+/-- Quartet sharp bound at `bulkCriticalRadius` expressed with `r^2 = 1/8`. -/
+theorem norm_quartetPolynomial_pi_bulkCritical_formula :
+    ‖quartetPolynomial bulkCriticalRadius Real.pi‖ = (1 - bulkCriticalRadius) * (9 / 8) := by
+  rw [norm_quartetPolynomial_pi bulkCriticalRadius_lt_one, bulkCriticalRadius_sq]
+  ring
+
+/-- Tail at `θ = 0` for `bulkCriticalRadius` in closed rational form. -/
+theorem norm_resolventTail_zero_bulkCritical :
+    ‖resolventTail bulkCriticalRadius 0‖ = 1 / (64 * (1 - bulkCriticalRadius)) := by
+  rw [norm_resolventTail_zero bulkCriticalRadius_nonneg bulkCriticalRadius_lt_one,
+      bulkCriticalRadius_pow_four, div_div]
+
+/-- Tail at `θ = π` for `bulkCriticalRadius` in closed rational form. -/
+theorem norm_resolventTail_pi_bulkCritical :
+    ‖resolventTail bulkCriticalRadius Real.pi‖ = 1 / (64 * (1 + bulkCriticalRadius)) := by
+  rw [norm_resolventTail_pi bulkCriticalRadius_nonneg bulkCriticalRadius_lt_one,
+      bulkCriticalRadius_pow_four, div_div]
+
+/-! ### Section 5 — Critical frequency set -/
+
+/--
+Set of imaginary heights γ where the C2 shell phase hits the sharpness angle `θ = π`.
+
+These are the γ values for which `-γ * log 2 ≡ π (mod 2π)`, i.e. where the bulk
+resolvent attains its minimum modulus `(1 + r)⁻¹`.
+
+Explicitly: `Γ_crit = {(2n + 1) * π / log 2 | n ∈ ℤ}`.
+-/
+def criticalFrequencySet : Set Real :=
+  {γ : Real | ∃ n : Int, γ = (2 * (n : Real) + 1) * Real.pi / Real.log 2}
+
+/-- Uniform spacing between consecutive critical frequencies. -/
+noncomputable def criticalFrequencySpacing : Real :=
+  2 * Real.pi / Real.log 2
+
+/-- Smallest positive critical frequency. -/
+noncomputable def criticalFrequencyFirst : Real :=
+  Real.pi / Real.log 2
+
+theorem criticalFrequencyFirst_pos : 0 < criticalFrequencyFirst := by
+  unfold criticalFrequencyFirst
+  exact div_pos Real.pi_pos (Real.log_pos (by norm_num : (1 : Real) < 2))
+
+theorem criticalFrequencyFirst_mem : criticalFrequencyFirst ∈ criticalFrequencySet :=
+  ⟨0, by unfold criticalFrequencyFirst; push_cast; ring⟩
+
+/-- Every critical frequency corresponds to a phase exactly equal to `π + 2πn`. -/
+theorem criticalFrequency_phase_eq_pi {γ : Real} (hγ : γ ∈ criticalFrequencySet) :
+    ∃ n : Int, -γ * Real.log 2 = Real.pi + 2 * Real.pi * (n : Real) := by
+  obtain ⟨m, hm⟩ := hγ
+  refine ⟨-m - 1, ?_⟩
+  have hlog2 : Real.log 2 ≠ 0 :=
+    (Real.log_pos (by norm_num : (1 : Real) < 2)).ne'
+  have key : -((2 * (m : Real) + 1) * Real.pi / Real.log 2) * Real.log 2 =
+      -((2 * (m : Real) + 1) * Real.pi) := by
+    rw [neg_mul, div_mul_cancel₀ _ hlog2]
+  rw [hm, key]
+  push_cast
+  ring
+
+/-- The critical frequency set is closed under adding integer multiples of the spacing. -/
+theorem criticalFrequencySet_closed_under_spacing
+    {γ : Real} (hγ : γ ∈ criticalFrequencySet) (n : Int) :
+    γ + (n : Real) * criticalFrequencySpacing ∈ criticalFrequencySet := by
+  obtain ⟨m, hm⟩ := hγ
+  refine ⟨m + n, ?_⟩
+  have hlog2 : Real.log 2 ≠ 0 :=
+    (Real.log_pos (by norm_num : (1 : Real) < 2)).ne'
+  rw [hm]
+  simp only [criticalFrequencySpacing, Int.cast_add]
+  field_simp [hlog2]
+  ring
+
+/-- The critical frequency spacing equals `2π / log 2`. -/
+theorem criticalFrequencySpacing_eq : criticalFrequencySpacing = 2 * Real.pi / Real.log 2 := rfl
+
+/-! ### Section 6 — Cutoff stability threshold -/
+
+/--
+Cutoff parameter threshold below which the resolvent central lower bound is preserved.
+
+The note's condition `X > C * (1 + r) / (1 - r)` is equivalently `C / resolventCutoffThreshold < X`
+with `resolventCutoffThreshold = (1 - r) / (1 + r)`.
+-/
+noncomputable def resolventCutoffThreshold : Real :=
+  (1 - bulkCriticalRadius) / (1 + bulkCriticalRadius)
+
+theorem resolventCutoffThreshold_pos : 0 < resolventCutoffThreshold :=
+  div_pos (by linarith [bulkCriticalRadius_lt_one]) (by linarith [bulkCriticalRadius_pos])
+
+/--
+Abstract form of the cutoff stability bound (note §6).
+
+If a cutoff residual satisfies `‖R_X‖ ≤ C / X`, then once `C / resolventCutoffThreshold < X`
+the positive margin `(1 + r)⁻¹ - C / (X * (1 - r))` is strictly positive, preserving the bulk
+nonvanishing lower bound.
+-/
+theorem resolvent_cutoff_stability_abstract
+    {C X : Real} (hX : C / resolventCutoffThreshold < X)
+    (_hC : 0 ≤ C) (hX0 : 0 < X) :
+    0 < (1 + bulkCriticalRadius)⁻¹ - C / (X * (1 - bulkCriticalRadius)) := by
+  have hr1 : 0 < 1 - bulkCriticalRadius := by linarith [bulkCriticalRadius_lt_one]
+  have hr2 : 0 < 1 + bulkCriticalRadius := by linarith [bulkCriticalRadius_pos]
+  have hXr : 0 < X * (1 - bulkCriticalRadius) := mul_pos hX0 hr1
+  rw [sub_pos, inv_eq_one_div, div_lt_div_iff₀ hXr hr2, one_mul]
+  have hThresh : 0 < resolventCutoffThreshold := resolventCutoffThreshold_pos
+  have h1 : C < X * resolventCutoffThreshold := by
+    calc C = C / resolventCutoffThreshold * resolventCutoffThreshold :=
+              (div_mul_cancel₀ C hThresh.ne').symm
+         _ < X * resolventCutoffThreshold :=
+              mul_lt_mul_of_pos_right hX hThresh
+  have h2 : X * resolventCutoffThreshold =
+      X * (1 - bulkCriticalRadius) / (1 + bulkCriticalRadius) := by
+    rw [resolventCutoffThreshold, mul_div_assoc]
+  rw [h2] at h1
+  calc C * (1 + bulkCriticalRadius)
+      < X * (1 - bulkCriticalRadius) / (1 + bulkCriticalRadius) * (1 + bulkCriticalRadius) :=
+          mul_lt_mul_of_pos_right h1 hr2
+    _ = X * (1 - bulkCriticalRadius) := div_mul_cancel₀ _ hr2.ne'
+
+/-!
+Primary sources for Sections 5, 6, 7:
+- docs/c2_quarteto_resolvente_sharpening.md (Sections 5, 6, 7)
+-/
+
 end LeanC2
