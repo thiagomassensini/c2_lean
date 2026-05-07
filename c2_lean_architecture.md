@@ -7,7 +7,7 @@
 > camadas estao fechadas em Lean, e quais pontos ainda entram como
 > interface ou input classico.
 >
-> Atualizado em **2026-05-04**.
+> Atualizado em **2026-05-07**.
 >
 > Toolchain atual: Lean `v4.29.1`, Mathlib `v4.29.1`.
 
@@ -45,44 +45,6 @@
 
 ## 2. Estrutura de diretórios
 
-```
-Lean/
-├── Antigo_Lean_C2/            -- codigo legado preservado
-├── c2_lean_architecture.md    -- esta nota
-├── legacy_reuse_map.md        -- mapa legado -> novo
-├── lakefile.toml              -- configuracao Lake
-├── lean-toolchain             -- versao Lean
-├── LeanC2.lean                -- arquivo raiz (re-exporta tudo)
-│
-└── LeanC2/
-  ├── Foundations/
-│   ├── Basic.lean             -- s = σ + it, δ = σ - 1/2, c = 2^k m, etc.
-│   ├── DyadicArith.lean       -- v_2, k_eff, bijeção centro↔perna (Thm 1)
-│   ├── DiscreteLaplacian.lean -- Δ²[f](c) := f(c-1) + f(c+1) - 2f(c)
-│   └── Tilt.lean              -- n^{-δ}, sign-definiteness (Thm 2, 5)
-│
-  ├── Operators/
-│   ├── Branch.lean            -- W_∞(s), ‖·‖² = 2^{1-4σ}/(1-2^{-2σ})
-│   ├── BranchNormBarrier.lean -- ‖W_∞‖² = 1 ⇔ σ = 1/2
-│   ├── Genuine.lean           -- D, B, F = D - B
-│   ├── Cutoff.lean            -- D_X, F_X = D_X - B
-│   └── BranchToGenuine.lean   -- ponte branch → genuine (Thms da nota op_ramo)
-│
-  ├── Identity/
-│   ├── C0.lean                -- c_0(s) = 2^{-2s}(2^s-1)/(2·2^s-1)
-│   ├── C0NonZero.lean         -- Thm 14: c_0 ≠ 0 em 0 < σ < 1
-│   ├── FundamentalIdentity.lean -- Thm 13: F_∞ = c_0 · ζ em σ > 1
-│   └── MeromorphicExt.lean    -- Thm 17: continuação para σ > 0
-│
-  ├── Cutoff/
-│   ├── Residue.lean           -- R_X = D_X - D_∞
-│   ├── DecayRate.lean         -- Thm 16: |R_X| = O(1/X)
-│   ├── Universality.lean      -- Thm 3: cutoffs Schwartz preservam seletividade
-│   └── Cancellation.lean      -- Thm 4: |D_X - B_X| / |D_X| = O(1/X)
-│
-  ├── NearAxis/
-## 2. Estrutura de diretórios
-
 Estrutura real hoje:
 
 ```
@@ -99,13 +61,17 @@ Estrutura real hoje:
     │   ├── Operators/
     │   ├── Identity/
     │   ├── Cutoff/
+    │   ├── CriticalLine/
     │   ├── NearAxis/
     │   ├── Bulk/
     │   ├── Edge/
     │   ├── Glue/
     │   ├── Finite/
     │   ├── Transfer/
-    │   └── Numerical/
+    │   ├── Numerical/
+    │   │   └── Generated/
+    │   ├── PublicAPI.lean
+    │   └── Tree.lean
     ├── LeanC2.lean
     ├── README.md
     ├── c2_lean_architecture.md
@@ -178,15 +144,16 @@ Legenda:
 |---|---|---|---|
 | Foundations | **Fechado** | `Foundations/Basic.lean`, `DyadicArith.lean`, `DiscreteLaplacian.lean`, `Tilt.lean` | Nucleo discreto/algebrico base da teoria C2 ja formalizado. |
 | Operators | **Fechado** | `Operators/Branch.lean`, `BranchNormBarrier.lean`, `Genuine.lean`, `Cutoff.lean`, `BranchToGenuine.lean` | Camada dos operadores e do numerador `F` ja organizada e build-clean. |
-| Identity | **Fechado** | `Identity/C0.lean`, `C0NonZero.lean`, `FundamentalIdentity.lean`, `MeromorphicExt.lean` | Ja formaliza `c0`, a nao anulacao de `c0` e a passagem `F = c0 * zeta` com extensao meromorfa no formato usado pela cadeia final. |
-| Cutoff | **Parcial** | `Cutoff/Residue.lean`, `DecayRate.lean`, `Universality.lean`, `Cancellation.lean` | Camada presente e integrada, mas hoje funciona principalmente como infraestrutura para glue/Hurwitz. |
+| Identity | **Fechado** | `Identity/C0.lean`, `C0NonZero.lean`, `C0LogDerivative.lean`, `FundamentalIdentity.lean`, `MeromorphicExt.lean` | Ja formaliza `c0`, a nao anulacao de `c0`, a derivada logaritmica de `c0` com bound na linha critica, e a passagem `F = c0 * zeta` com extensao meromorfa no formato usado pela cadeia final. |
+| Cutoff | **Parcial** | `Cutoff/Residue.lean`, `DecayRate.lean`, `DominantQuartet.lean`, `Universality.lean`, `Cancellation.lean` | Camada presente e integrada; `DominantQuartet.lean` formaliza o kernel de quatro cascas e os coeficientes do quarteto dominante usados tambem pelo modulo Bulk. (`AMBound.lean` existe no diretorio mas nao e importado pela raiz — arquivo experimental/legado.) |
 | NearAxis | **Parcial forte** | `NearAxis/Transversality.lean`, `TaylorRadius.lean`, `GlobalBound.lean`, `FXNonZero.lean`, `Amplification.lean` | Ja contem o nucleo abstrato de Thm 8, a algebra de Taylor, `deltaStarLowerModel` e a ponte de witnesses para `nearRegionEventuallyNonvanishing`; a producao analitica concreta desses witnesses ainda nao esta internalizada. |
-| Bulk | **Parcial / Axiomatico** | `Bulk/Resolvent.lean`, `QuartetSharp.lean`, `ClassicalAxioms.lean`, `BulkLowerBound.lean`, `FXNonZeroBulk.lean` | Estrutura pronta e conectada, mas o lower bound pesado ainda depende de input classico e `FXNonZeroBulk` segue como interface operacional. |
+| Bulk | **Parcial / Axiomatico** | `Bulk/Resolvent.lean`, `QuartetSharp.lean`, `CentralResolvent.lean`, `ClassicalAxioms.lean`, `BulkLowerBound.lean`, `FXNonZeroBulk.lean`, `Route3.lean`, `DirectFX.lean` | Estrutura pronta e conectada; `CentralResolvent.lean` formaliza o raio critico bulk e os coeficientes centrais; `Route3.lean` empacota o certificado canonico de Route 3; `DirectFX.lean` implementa a rota direta via margem do quarteto dominante. O lower bound pesado ainda depende de input classico e `FXNonZeroBulk` segue como interface operacional. |
 | Edge | **Parcial** | `Edge/EdgeRight.lean`, `Edge/EdgeLeft.lean`, `FEdgeNonZero.lean` | A camada existe, mas a forma final usada na colagem ainda esta exposta como interface. |
 | Glue | **Fechado** | `Glue/Decomposition.lean`, `Compatibility.lean`, `UniformCutoff.lean`, `GlueTheorem.lean` | Geometria off-axis, cobertura `near/bulk/edge`, compatibilidade e teorema de colagem high-height ja formalizados. |
 | Finite | **Parcial / Axiomatico** | `Finite/DyadicCoverage.lean`, `FiniteCertificate.lean` | A cobertura finita e o empacotamento `finite + glue` existem, inclusive com `DefaultFiniteAndGlueData` e `DefaultGlobalBoundData`; o certificado numerico bruto ainda nao foi internalizado como prova concreta. |
 | Transfer | **Parcial forte** | `Transfer/Hurwitz.lean`, `ZetaTransfer.lean`, `RH.lean` | O empacotamento final ate `zeta` e RH ja esta formalizado e compilando; o passo de Hurwitz segue como interface classica explicita. |
-| Numerical | **Fechado / Suporte** | `Numerical/Constants.lean`, `Verification.lean` | Constantes default e infraestrutura numerica auxiliar ja presentes. |
+| Numerical | **Fechado / Suporte** | `Numerical/Constants.lean`, `GlobalBoundInput.lean`, `Verification.lean`, `Generated/` | Constantes default e infraestrutura numerica auxiliar presentes; `GlobalBoundInput.lean` prove o scaffold externo de Taylor para near-axis; `Generated/` contem sete arquivos de certificado gerado (bulk, edge, finite-height, global bound, etc.). |
+| CriticalLine | **Parcial** | `CriticalLine/Nonvanishing.lean` | Modulo novo: predicados e proposicoes de nao anulacao na linha critica (`criticalLine`, `highCriticalLine`, `finiteHeightCriticalLine`, variantes `cutoffFamilyEventuallyNonvanishing*`). Depende de `DominantQuartet` e `Glue.Decomposition`. Certificacao concreta da linha critica ainda nao internalizada. |
 
 ---
 
@@ -258,6 +225,10 @@ Identificadores importantes ja presentes na arvore atual:
   `riemannZeta_nonvanishing_offCriticalStrip_of_defaultData`, `riemannZeta_nonvanishing_offCriticalStrip_of_defaultGlobalBoundData`, `routeK_default_offaxis_riemannZeta_nonvanishing`, `routeK_default_globalBound_offaxis_riemannZeta_nonvanishing`.
 - `Transfer/RH.lean`:
   `RiemannHypothesisC2`, `riemannHypothesisC2_of_defaultData`, `riemannHypothesisC2_of_defaultGlobalBoundData`, `routeK_default_chain_RH`, `routeK_default_globalBound_chain_RH`.
+- `CriticalLine/Nonvanishing.lean`:
+  `criticalLine`, `criticalLineNonvanishing`, `highCriticalLine`, `highCriticalLineNonvanishing`, `cutoffFamilyEventuallyNonvanishingOnHighCriticalLine`, `finiteHeightCriticalLine`, `finiteHeightCriticalLineNonvanishing`, `cutoffFamilyEventuallyNonvanishingOnFiniteHeightCriticalLine`, `cutoffFamilyEventuallyNonvanishingOnCriticalLine`.
+- `PublicAPI.lean`:
+  `tiltBracket_zero_iff_sigma_half_on_rightHalfPlane`, `tiltBracket_nonzero_off_criticalLine_on_rightHalfPlane`, `c0_nonzero_on_rightHalfPlane`, `c0_nonzero_on_criticalLine`, `fundamentalIdentity_ratio_on_rightHalfPlaneCoordinate`, `fundamentalIdentity_nonzero_transfer_on_rightHalfPlaneCoordinate`. Camada de API publica com aliases nomeados em estilo usuario-final sobre os teoremas internos da cadeia.
 
 Esses nomes sao hoje a API arquitetural mais util para amarrar novos passos
 sem reabrir a cadeia inteira.
@@ -283,7 +254,8 @@ lake build
 Estado atual:
 
 - a arvore Lean inteira ja fecha em `lake build`;
-- o arquivo raiz `LeanC2.lean` ja importa `Cutoff.Residue`, `Finite.DyadicCoverage`, `Numerical.Constants` e `Numerical.Verification`;
+- o arquivo raiz `LeanC2.lean` importa todos os modulos da arvore: `Foundations`, `Operators`, `Identity` (incluindo `C0LogDerivative`), `Cutoff` (incluindo `DominantQuartet`), `CriticalLine.Nonvanishing`, `NearAxis`, `Bulk` (incluindo `CentralResolvent`, `Route3`, `DirectFX`), `Edge`, `Glue`, `Finite`, `Transfer`, `Numerical` (incluindo `GlobalBoundInput`) e `PublicAPI`;
+- `Cutoff/AMBound.lean` e `LeanC2/Tree.lean` existem no diretorio mas nao sao importados pela raiz (arquivos experimentais/legados);
 - ainda nao existe `.github/workflows/` no repositorio Lean.
 
 Recomendacao pratica de proximo passo para infraestrutura: adicionar um workflow

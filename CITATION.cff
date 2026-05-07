@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this Lean formalization, please cite it using the metadata below."
 title: "LeanC2: Lean 4 formalization for the C2 -> RH chain"
 type: software
-version: "zenodo-2026-05-06.1"
-date-released: "2026-05-06"
+version: "zenodo-2026-05-07"
+date-released: "2026-05-07"
 repository-code: "https://github.com/thiagomassensini/c2_lean"
 url: "https://github.com/thiagomassensini/c2_lean"
 abstract: >-

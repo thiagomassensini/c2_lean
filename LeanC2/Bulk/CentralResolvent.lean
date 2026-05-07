@@ -151,6 +151,24 @@ theorem routeK_resolvent_sharpness_at_pi_bulkCritical :
 noncomputable def resolventTail (r θ : Real) : Complex :=
   resolventKernel r θ - quartetPolynomial r θ
 
+/-- The exact resolvent is the quartet plus its tail. -/
+theorem resolventKernel_eq_quartetPolynomial_add_tail (r θ : Real) :
+    resolventKernel r θ = quartetPolynomial r θ + resolventTail r θ := by
+  unfold resolventTail
+  abel
+
+/-- The sharp quartet phase is a global minimum, in the non-unique sense needed for the bound. -/
+theorem norm_quartetPolynomial_pi_le {r θ : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
+    ‖quartetPolynomial r Real.pi‖ ≤ ‖quartetPolynomial r θ‖ := by
+  rw [norm_quartetPolynomial_pi hr1]
+  exact routeK_quartet_lower_bound hr0 hr1
+
+/-- The sharp resolvent phase is a global minimum, in the non-unique sense needed for the bound. -/
+theorem norm_resolventKernel_pi_le {r θ : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
+    ‖resolventKernel r Real.pi‖ ≤ ‖resolventKernel r θ‖ := by
+  rw [norm_resolventKernel_pi hr0]
+  exact routeK_resolvent_lower_bound hr0 hr1
+
 /-- Closed form of the quartet tail from the resolvent note. -/
 theorem resolventTail_eq_closedForm {r θ : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
     resolventTail r θ = radialPhase r θ ^ 4 / (1 - radialPhase r θ) := by
@@ -210,6 +228,13 @@ theorem norm_resolventTail_zero {r : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
     norm_num [Complex.ofReal_div]
   rw [hcomplex, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hnonneg]
 
+/-- The tail upper bound is attained at `θ = 0`, so this phase gives a global tail maximum. -/
+theorem norm_resolventTail_le_zero {r θ : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
+    ‖resolventTail r θ‖ ≤ ‖resolventTail r 0‖ := by
+  calc
+    ‖resolventTail r θ‖ ≤ r ^ 4 / (1 - r) := norm_resolventTail_le hr0 hr1
+    _ = ‖resolventTail r 0‖ := (norm_resolventTail_zero hr0 hr1).symm
+
 /--
 At the sharp resolvent phase `θ = π`, the quartet tail is smaller by the alternating denominator.
 -/
@@ -228,6 +253,39 @@ theorem norm_resolventTail_pi {r : Real} (hr0 : 0 ≤ r) (hr1 : r < 1) :
         ((r ^ 4 / (1 + r) : Real) : Complex) := by
     norm_num [Complex.ofReal_div]
   rw [hcomplex, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+
+/-- At positive radius, the tail at `π` is strictly smaller than the worst tail at `0`. -/
+theorem norm_resolventTail_pi_lt_zero {r : Real} (hr0 : 0 < r) (hr1 : r < 1) :
+    ‖resolventTail r Real.pi‖ < ‖resolventTail r 0‖ := by
+  rw [norm_resolventTail_pi hr0.le hr1, norm_resolventTail_zero hr0.le hr1]
+  have hnum : 0 < r ^ 4 := pow_pos hr0 4
+  have hdenPlus : 0 < 1 + r := by linarith
+  have hdenMinus : 0 < 1 - r := by linarith
+  rw [div_lt_div_iff₀ hdenPlus hdenMinus]
+  nlinarith
+
+/-- At `π`, the full resolvent is strictly larger than the quartet truncation. -/
+theorem norm_quartetPolynomial_pi_lt_norm_resolventKernel_pi
+    {r : Real} (hr0 : 0 < r) (hr1 : r < 1) :
+    ‖quartetPolynomial r Real.pi‖ < ‖resolventKernel r Real.pi‖ := by
+  rw [norm_quartetPolynomial_pi hr1, norm_resolventKernel_pi hr0.le]
+  have hden : 0 < 1 + r := by linarith
+  have hpow : 0 < r ^ 4 := pow_pos hr0 4
+  rw [inv_eq_one_div, lt_div_iff₀ hden]
+  have hprod : (1 - r) * (1 + r ^ 2) * (1 + r) = 1 - r ^ 4 := by
+    ring
+  rw [hprod]
+  nlinarith
+
+theorem norm_resolventTail_pi_lt_zero_bulkCritical :
+    ‖resolventTail bulkCriticalRadius Real.pi‖ < ‖resolventTail bulkCriticalRadius 0‖ := by
+  exact norm_resolventTail_pi_lt_zero bulkCriticalRadius_pos bulkCriticalRadius_lt_one
+
+theorem norm_quartetPolynomial_pi_lt_norm_resolventKernel_pi_bulkCritical :
+    ‖quartetPolynomial bulkCriticalRadius Real.pi‖ <
+      ‖resolventKernel bulkCriticalRadius Real.pi‖ := by
+  exact norm_quartetPolynomial_pi_lt_norm_resolventKernel_pi
+    bulkCriticalRadius_pos bulkCriticalRadius_lt_one
 
 /-- The `k = 2` central shell is exactly the first retained shell coefficient times one odd core. -/
 theorem centerTerm_two_eq_firstShellCoeff_mul_oddCore (s : Complex) (m : Nat) :
