@@ -1,5 +1,6 @@
 import LeanC2.Numerical.GlobalBoundInput
 import LeanC2.Numerical.Constants
+import LeanC2.Bulk.Route3
 
 set_option linter.style.whitespace false
 set_option linter.style.longLine false
@@ -56,9 +57,16 @@ Logical route:
 - Route 1 numerical scans and Route 2 Rouche checks are support/audit material, not Lean kernel dependencies.
 - default threshold: `t >= 100`, `eps = 1/20`
 
-This certificate supplies one regional leg of the canonical high off-strip package.
+This certificate supplies the Route 3 analytic inputs for one regional leg of the canonical
+high off-strip package. The final bulk nonvanishing proposition is derived below from
+`canonicalBulkGlobalBoundCertificate_of_route3`.
 -/
-axiom certifiedCanonicalBulkGlobalBoundCertificate :
-  CanonicalBulkGlobalBoundCertificate
+axiom certifiedCanonicalRoute3BulkCertificate :
+  Route3CanonicalBulkCertificate
+
+theorem certifiedCanonicalBulkGlobalBoundCertificate :
+  CanonicalBulkGlobalBoundCertificate := by
+  exact canonicalBulkGlobalBoundCertificate_of_route3
+    certifiedCanonicalRoute3BulkCertificate
 
 end LeanC2
