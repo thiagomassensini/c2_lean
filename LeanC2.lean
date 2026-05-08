@@ -8,6 +8,7 @@ import LeanC2.Operators.BranchNormBarrier
 import LeanC2.Operators.Genuine
 import LeanC2.Operators.Cutoff
 import LeanC2.Operators.BranchToGenuine
+import LeanC2.Operators.GenuineMinimalCPU
 
 import LeanC2.Identity.C0
 import LeanC2.Identity.C0NonZero
