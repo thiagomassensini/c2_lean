@@ -1,6 +1,7 @@
 import Mathlib
 import LeanC2.Bulk.ClassicalAxioms
 import LeanC2.Identity.C0NonZero
+import LeanC2.Identity.MeromorphicExt
 
 namespace LeanC2
 
