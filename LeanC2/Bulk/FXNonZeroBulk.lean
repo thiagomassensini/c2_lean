@@ -79,4 +79,35 @@ family on the bulk region. The classical analytic ingredients that produce the l
 explicit upstream inputs.
 -/
 
+/-! ### VK-derived bulk lower bound for `continuedFInfinity` -/
+
+/--
+Bulk lower bound for the continued C2 numerator, from the Vinogradov-Korobov-Ford axiom.
+
+The bound function `B(s) := ‖c0 s‖ · zetaVKBound C_VK s` satisfies
+`bulkLimitLowerBound continuedFInfinity B deltaStar eps T0` on any bulk region
+with height threshold T₀ ≥ T₁ (the VK height constant).
+
+Proof chain: `‖continuedFInfinity s‖ = ‖c0 s‖ · ‖ζ(s)‖ ≥ ‖c0 s‖ · B_VK(s)`.
+-/
+theorem continuedFInfinity_bulkLowerBound_of_VK :
+    ∃ C_VK T₁ : ℝ, 0 < C_VK ∧ 3 ≤ T₁ ∧
+      ∀ deltaStar : ℝ → ℝ, ∀ eps T0 : ℝ, T₁ ≤ T0 →
+        bulkLimitLowerBound continuedFInfinity
+          (fun s => ‖c0 s‖ * zetaVKBound C_VK s) deltaStar eps T0 := by
+  obtain ⟨C_VK, T₁, hC, hT, hVK⟩ := vinogradovKorobovFordLowerBound
+  refine ⟨C_VK, T₁, hC, hT, fun deltaStar eps T0 hT0 s hs => ?_⟩
+  have hsRe0 : 0 < s.re := hs.1.1.1
+  have hsRe1 : s.re < 1 := hs.1.1.2.1
+  have hsIm : T₁ ≤ |s.im| := by
+    simpa [stripHeight] using hT0.trans hs.1.2
+  constructor
+  · exact mul_pos (c0_norm_pos_of_re_pos hsRe0) (zetaVKBound_pos C_VK s)
+  · calc ‖c0 s‖ * zetaVKBound C_VK s
+        ≤ ‖c0 s‖ * ‖riemannZeta s‖ :=
+            mul_le_mul_of_nonneg_left (hVK s hsRe0 hsRe1 hsIm)
+              (le_of_lt (c0_norm_pos_of_re_pos hsRe0))
+      _ = ‖continuedFInfinity s‖ :=
+            (norm_continuedFInfinity_eq_mul_norm_riemannZeta s).symm
+
 end LeanC2
